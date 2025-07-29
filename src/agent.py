@@ -13,6 +13,7 @@ class Citizen(mesa.Agent):
         self.time_budget = time_budget
         self.preference_weights = preference_weights
         self.distances = {}
+        self.tank = 0 #Test
 
     def step(self):
         self.current_time = (self.current_time + 1) % 24
