@@ -59,7 +59,7 @@ class Citizen(mesa.Agent):
             # Richtung berechnen
             dx = self.destination[0] - self.pos[0]
             dy = self.destination[1] - self.pos[1]
-            distance = (dx ** 2 + dy ** 2) ** 0.5
+            distance = (dx ** 2 + dy ** 2) ** 0.5 #euklidischer Abstand
 
             # Schritt nur, wenn nötig
             if distance > 0:
