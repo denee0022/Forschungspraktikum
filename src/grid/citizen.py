@@ -1,6 +1,7 @@
 from mesa import Agent
 
 from tank import Tank
+from action import Action
 
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work):
@@ -13,11 +14,13 @@ class Citizen(Agent):
         self.pos = home
         self.time_to_next = 0
         self.state = "to_work"
-        self.tank_mental_health = Tank(100, 70)
-        self.tank_physical_health = Tank(100, 70)
-        self.tank_leisure = Tank(100, 70)
-        self.tank_social_inclusion = Tank(100, 70)
-        self.tank_food = Tank(100, 70)
+        #später noch random füllen zu beginn
+        self.tank_mental_health = Tank(100, 70, 20)
+        self.tank_physical_health = Tank(100, 70, 20)
+        self.tank_leisure = Tank(100, 70, 20)
+        self.tank_social_inclusion = Tank(100, 70, 20)
+        self.tank_self_determination = Tank(100,70, 20)
+        self.tank_food = Tank(100, 70, 20)
 
     def step(self):
         if not self.route:
@@ -37,4 +40,6 @@ class Citizen(Agent):
                 self.state = "to_work"
                 self.current_goal = self.work
             self.route = []
+
+
 

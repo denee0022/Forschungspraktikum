@@ -1,7 +1,8 @@
 class Tank:
-    def __init__(self, capacity, level):
+    def __init__(self, capacity, level, threshold):
         self.capacity = capacity
         self.level = level
+        self.threshold = threshold
 
     def update(self, amount):
         # Nettofluss
