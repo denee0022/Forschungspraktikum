@@ -5,7 +5,7 @@ import networkx as nx
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import dijkstra
-
+import random
 
 class RoadNetwork:
 
@@ -18,10 +18,13 @@ class RoadNetwork:
 
         # Edge defaults
         for u, v, data in self.graph.edges(data=True):
+            """
             data.setdefault("length", 1.0)
             data.setdefault("base_time", data["length"] / 1.0)
             data.setdefault("travel_time", data["base_time"])
-
+            """
+            length = random.uniform(0.5, 2.0)  # zufällige Länge zwischen 0.5 und 2.0
+            data["travel_time"] = length
         self._build_sparse()
 
     def _build_sparse(self):

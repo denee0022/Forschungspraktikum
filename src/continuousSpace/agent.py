@@ -79,3 +79,4 @@ class Citizen(mesa.Agent):
             "pos": self.home.pos,
             "distance": dist(self.pos, self.home.pos)
         }
+

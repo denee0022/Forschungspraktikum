@@ -4,7 +4,7 @@ if __name__ == "__main__":
     G = nx.Graph()
     G.add_edge('A', 'B', length=2)
     G.add_edge('B', 'C', length=1)
-    G.add_edge('A', 'C', length=4)
+    G.add_edge('A', 'C', length=2)
 
     rn = RoadNetwork(G)
     src = rn.index_of['A']
