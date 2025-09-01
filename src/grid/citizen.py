@@ -50,11 +50,12 @@ class Citizen(Agent):
             start = self.pos
             goal = self.current_goal
             self.route = self.model.road.shortest_path_sparse(start, goal)
-            #Nochmal testen und nachschaune ob es funktioniert
-            if self.model.parks in self.route:
-                self.action.path_UGS(self)
-            else:
-                self.action.path_street(self)
+
+            for step in self.route:
+                if step in self.model.parks:
+                    self.action.path_UGS(self)
+                else:
+                    self.action.path_street(self)
 
             print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
             self.model.grid.move_agent(self, goal)

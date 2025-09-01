@@ -5,12 +5,16 @@ class DailySchedule:
     def __init__(self, steps_per_day=24):
         #Nochmal nachschauen wie man es effektiv machen sonst einfach manuell hinzufügen
         self.steps_per_day = steps_per_day
-        self.schedule = {
-            {0, 1, 2, 3, 4, 5, 6, 7, 22, 23}: Activity.SLEEPING,
-            {8, 9, 10, 11, 12, 13, 14, 15, 16}: Activity.WORKING,
-            {17, 18, 19, 20, 21}: Activity.LEISURE
-        }
+        self.schedule = {}
 
+        for hour in [0, 1, 2, 3, 4, 5, 6, 7, 22, 23]:
+            self.schedule[hour] = Activity.SLEEPING
+
+        for hour in range(8, 17):
+            self.schedule[hour] = Activity.WORKING
+
+        for hour in range(17, 22):
+            self.schedule[hour] = Activity.LEISURE
     def get_activity_for_step(self, step):
         day_step = step % self.steps_per_day
         return self.schedule.get(day_step, Activity.SLEEPING)
