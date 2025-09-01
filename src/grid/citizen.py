@@ -2,6 +2,10 @@ from mesa import Agent
 
 from tank import Tank
 from action import Action
+from constants import Activity
+from daily_schedule import DailySchedule
+import random
+
 
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work):
@@ -13,7 +17,7 @@ class Citizen(Agent):
         self.route = []
         self.pos = home
         self.time_to_next = 0
-        self.state = "to_work"
+        self.current_activity = Activity.SLEEPING
         #später noch random füllen zu beginn
         self.tank_mental_health = Tank(100, 70, 20)
         self.tank_physical_health = Tank(100, 70, 20)
@@ -22,24 +26,48 @@ class Citizen(Agent):
         self.tank_self_determination = Tank(100,70, 20)
         self.tank_food = Tank(100, 70, 20)
 
+        self.daily_schedule = DailySchedule()
+
+    # Nochmal schauen warum Enum vergleich nur über Enum.value geht
     def step(self):
-        if not self.route:
+
+        current_step = self.model.schedule.steps if hasattr(self.model.schedule, 'steps') else 0
+        scheduled_activity = self.daily_schedule.get_activity_for_step(current_step)
+        if scheduled_activity.value != self.current_activity.value:
+            self.current_activity = scheduled_activity
+            print(f"Citizen {self.unique_id}: Neue Aktivität: {self.current_activity} (Step {current_step})")
+
+            if self.current_activity.value == Activity.WORKING.value:
+                self.current_goal = self.work
+                print("Komme ich hier rein?")
+            elif self.current_activity.value == Activity.LEISURE.value:
+                self.current_goal = self.choose_leisure_location()
+            else:  # SLEEPING
+                self.current_goal = self.home
+            print(f"Agent {self.unique_id} Position: {self.pos}, Ziel: {self.current_goal}")
+
             start = self.pos
             goal = self.current_goal
-
             self.route = self.model.road.shortest_path_sparse(start, goal)
             print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
+            self.model.grid.move_agent(self, goal)
             self.pos = goal
-            self.model.grid.place_agent(self, self.pos)
-            print(f"Agent {self.unique_id} befindet sich gerade in:  {self.pos}")
-        if len(self.route) <= 1:
-            if self.state == "to_work":
-                self.state = "to_home"
-                self.current_goal = self.home
-            else:
-                self.state = "to_work"
-                self.current_goal = self.work
             self.route = []
+            if self.pos == self.current_goal:
+                self.execute_current_activity()
 
+    def choose_leisure_location(self):
+        return random.choice(list(self.model.parks))
 
-
+    def execute_current_activity(self):
+        action = Action()
+        if self.current_activity == Activity.SLEEPING:
+            action.sleeping(self)
+        elif self.current_activity == Activity.WORKING:
+            action.working(self)
+        elif self.current_activity == Activity.LEISURE:
+            # Je nach Ort verschiedene Freizeitaktivitäten
+            if self.pos in getattr(self.model, 'parks', set()):
+                action.freetime_UGS(self)
+            else:
+                action.freetime_home(self)

@@ -38,11 +38,11 @@ class CityModel(Model):
         self.homes = set(home_nodes)
 
         n_workplaces = int(n_agents * work_fraction)
-        available_for_workplaces = list(set(all_nodes)-set(home_nodes))
-        workplace_nodes = list(np.random.choice(available_for_workplaces, size=n_workplaces, replace = False))
+        available_for_workplaces = list(set(all_nodes) - set(home_nodes))
+        workplace_nodes = list(np.random.choice(available_for_workplaces, size=n_workplaces, replace=False))
         self.workplaces = set(workplace_nodes)
 
-        available_for_parks = list(set(all_nodes) - set(home_nodes)-self.workplaces)
+        available_for_parks = list(set(all_nodes) - set(home_nodes) - self.workplaces)
         n_parks = max(1, int(len(all_nodes) * park_fraction))
         park_nodes = list(np.random.choice(available_for_parks, size=n_parks, replace=False))
         self.parks = set(park_nodes)
@@ -82,19 +82,8 @@ class CityModel(Model):
 
     def step(self):
         self.schedule.step()
+        all_agents = self.grid.get_all_cell_contents()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        print("=== Agent Status ===")
+        for agent in all_agents:
+            print(f"Agent {agent.unique_id}: Position {agent.pos}, Aktivität: {agent.current_activity.value}")

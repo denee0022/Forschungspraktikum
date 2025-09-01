@@ -6,14 +6,14 @@ class Action:
         citizen.tank_physical_health.update(20)
         citizen.tank_leisure.update(-20)
         citizen.tank_social_inclusion.update(-30)
-        citizen.tank_citizen_determination.update(-20)
+        citizen.tank_self_determination.update(-20)
         citizen.tank_food.update(-20)
     def working(self, citizen):
         citizen.tank_mental_health.update(-30)
         citizen.tank_physical_health.update(-30)
         citizen.tank_leisure.update(-30)
         citizen.tank_social_inclusion.update(10)
-        citizen.tank_citizen_determination.update(-20)
+        citizen.tank_self_determination.update(-20)
         citizen.tank_food.update(-20)
 
     def freetime_UGS(self, citizen):
@@ -21,7 +21,7 @@ class Action:
         citizen.tank_physical_health.update(20)
         citizen.tank_leisure.update(30)
         citizen.tank_social_inclusion.update(20)
-        citizen.tank_citizen_determination.update(30)
+        citizen.tank_self_determination.update(30)
         citizen.tank_food.update(20)
 
     def freetime_home(self, citizen):
@@ -29,7 +29,7 @@ class Action:
         citizen.tank_physical_health.update(10)
         citizen.tank_leisure.update(30)
         citizen.tank_social_inclusion.update(10)
-        citizen.tank_citizen_determination.update(30)
+        citizen.tank_self_determination.update(30)
         citizen.tank_food.update(-10)
 
 #Start oder Zielknoten ist ein park
@@ -38,7 +38,7 @@ class Action:
         citizen.tank_physical_health.update(-10)
         citizen.tank_leisure.update(10)
         citizen.tank_social_inclusion.update(0)
-        citizen.tank_citizen_determination.update(0)
+        citizen.tank_self_determination.update(0)
         citizen.tank_food.update(-10)
 
 #Start und Zielknoten ist kein Park
@@ -47,7 +47,7 @@ class Action:
         citizen.tank_physical_health.update(-10)
         citizen.tank_leisure.update(0)
         citizen.tank_social_inclusion.update(0)
-        citizen.tank_citizen_determination.update(0)
+        citizen.tank_self_determination.update(0)
         citizen.tank_food.update(-10)
 
     def eating(self, citizen):
@@ -55,5 +55,5 @@ class Action:
         citizen.tank_physical_health.update(20)
         citizen.tank_leisure.update(10)
         citizen.tank_social_inclusion.update(10)
-        citizen.tank_citizen_determination.update(10)
+        citizen.tank_self_determination.update(10)
         citizen.tank_food.update(70)

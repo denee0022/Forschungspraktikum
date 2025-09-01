@@ -7,6 +7,7 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import dijkstra
 import random
 
+
 class RoadNetwork:
 
     def __init__(self, graph: nx.Graph):

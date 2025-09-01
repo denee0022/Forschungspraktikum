@@ -12,6 +12,7 @@ if __name__ == "__main__":
                       park_fraction=park_fraction, seed=seed)
 
     # Test: alle Agenten initial positionieren
+    print("Aufbau des Experiments:")
     print(f"Anzahl Knoten im Graph: {len(model.road.graph.nodes())}")
     print(f"Anzahl Häuser: {model.homes}")
     print(f"Anzahl Workplaces: {model.workplaces}")
@@ -21,13 +22,12 @@ if __name__ == "__main__":
     print("Startpositionen der Agenten:")
     for agent in model.schedule.agents:
         print(f"Agent {agent.unique_id} startet bei Knoten {agent.pos}")
+    print("______________________________________________________________________")
     #print(f"NX-Graph: {model.road.sparse}")
-    # Simulation für ein paar Schritte laufen lassen
 
-    steps = 5
+    # Simulation für ein paar Schritte laufen lassen
+    steps = 10
     for step in range(steps):
         print(f"\n--- Simulationsschritt {step+1} ---")
         model.step()
-        for agent in model.schedule.agents:
-            print(f"Agent {agent.unique_id} Position: {agent.pos}, Ziel: {agent.current_goal}")
 
