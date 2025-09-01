@@ -6,9 +6,9 @@ class DailySchedule:
         #Nochmal nachschauen wie man es effektiv machen sonst einfach manuell hinzufügen
         self.steps_per_day = steps_per_day
         self.schedule = {
-            {0, 1, 2, 3, 4, 5, 6, 7, 21, 22, 23}: Activity.SLEEPING,
-            {8, 9, 10, 11, 12, 13, 14, 15}: Activity.WORKING,
-            {16, 17, 18, 19, 20}: Activity.LEISURE
+            {0, 1, 2, 3, 4, 5, 6, 7, 22, 23}: Activity.SLEEPING,
+            {8, 9, 10, 11, 12, 13, 14, 15, 16}: Activity.WORKING,
+            {17, 18, 19, 20, 21}: Activity.LEISURE
         }
 
     def get_activity_for_step(self, step):

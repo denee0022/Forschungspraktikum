@@ -5,7 +5,7 @@ from action import Action
 from constants import Activity
 from daily_schedule import DailySchedule
 import random
-
+import numpy as np
 
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work):
@@ -18,13 +18,14 @@ class Citizen(Agent):
         self.pos = home
         self.time_to_next = 0
         self.current_activity = Activity.SLEEPING
-        #später noch random füllen zu beginn
-        self.tank_mental_health = Tank(100, 70, 20)
-        self.tank_physical_health = Tank(100, 70, 20)
-        self.tank_leisure = Tank(100, 70, 20)
-        self.tank_social_inclusion = Tank(100, 70, 20)
-        self.tank_self_determination = Tank(100,70, 20)
-        self.tank_food = Tank(100, 70, 20)
+
+        np.random.seed(42) # random Seed, um Tanks zufällig zu füllen
+        self.tank_mental_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
+        self.tank_physical_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
+        self.tank_leisure = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
+        self.tank_social_inclusion = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
+        self.tank_self_determination = Tank(100,np.random.randint(20, 100), np.random.randint(5, 30))
+        self.tank_food = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.action = Action()
         self.daily_schedule = DailySchedule()
 
