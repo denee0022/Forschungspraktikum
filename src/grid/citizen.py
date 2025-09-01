@@ -25,7 +25,7 @@ class Citizen(Agent):
         self.tank_social_inclusion = Tank(100, 70, 20)
         self.tank_self_determination = Tank(100,70, 20)
         self.tank_food = Tank(100, 70, 20)
-
+        self.action = Action()
         self.daily_schedule = DailySchedule()
 
     # Nochmal schauen warum Enum vergleich nur über Enum.value geht
@@ -49,6 +49,12 @@ class Citizen(Agent):
             start = self.pos
             goal = self.current_goal
             self.route = self.model.road.shortest_path_sparse(start, goal)
+            #Nochmal testen und nachschaune ob es funktioniert
+            if self.model.parks in self.route:
+                self.action.path_UGS(self)
+            else:
+                self.action.path_street(self)
+
             print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
             self.model.grid.move_agent(self, goal)
             self.pos = goal
@@ -60,14 +66,13 @@ class Citizen(Agent):
         return random.choice(list(self.model.parks))
 
     def execute_current_activity(self):
-        action = Action()
         if self.current_activity == Activity.SLEEPING:
-            action.sleeping(self)
+            self.action.sleeping(self)
         elif self.current_activity == Activity.WORKING:
-            action.working(self)
+            self.action.working(self)
         elif self.current_activity == Activity.LEISURE:
             # Je nach Ort verschiedene Freizeitaktivitäten
             if self.pos in getattr(self.model, 'parks', set()):
-                action.freetime_UGS(self)
+                self.action.freetime_UGS(self)
             else:
-                action.freetime_home(self)
+                self.action.freetime_home(self)

@@ -2,16 +2,13 @@ from constants import Activity
 
 
 class DailySchedule:
-    def __init__(self, steps_per_day=8):
+    def __init__(self, steps_per_day=24):
+        #Nochmal nachschauen wie man es effektiv machen sonst einfach manuell hinzufügen
         self.steps_per_day = steps_per_day
         self.schedule = {
-            0: Activity.SLEEPING,
-            1: Activity.WORKING,
-            2: Activity.WORKING,
-            3: Activity.WORKING,
-            6: Activity.LEISURE,
-            7: Activity.LEISURE,
-            8: Activity.SLEEPING
+            {0, 1, 2, 3, 4, 5, 6, 7, 21, 22, 23}: Activity.SLEEPING,
+            {8, 9, 10, 11, 12, 13, 14, 15}: Activity.WORKING,
+            {16, 17, 18, 19, 20}: Activity.LEISURE
         }
 
     def get_activity_for_step(self, step):
