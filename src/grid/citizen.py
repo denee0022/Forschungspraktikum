@@ -9,7 +9,7 @@ import numpy as np
 
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work):
-        super().__init__(model)
+        super().__init__(unique_id, model)
         self.id = unique_id
         self.home = home
         self.work = work

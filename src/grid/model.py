@@ -7,7 +7,6 @@ from typing import Optional
 
 from mesa.space import NetworkGrid
 from mesa.time import SimultaneousActivation
-
 from src.grid.citizen import Citizen
 from src.grid.roadNetwork import RoadNetwork
 

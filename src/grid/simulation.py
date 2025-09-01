@@ -26,7 +26,7 @@ if __name__ == "__main__":
     #print(f"NX-Graph: {model.road.sparse}")
 
     # Simulation für ein paar Schritte laufen lassen
-    steps = 10
+    steps = 24
     for step in range(steps):
         print(f"\n--- Simulationsschritt {step+1} ---")
         model.step()
