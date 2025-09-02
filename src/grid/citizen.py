@@ -7,9 +7,11 @@ from daily_schedule import DailySchedule
 import random
 import numpy as np
 
+
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work):
-        super().__init__(unique_id, model)
+        # hier nochmal schauen. Bei mesa version 2.3.2 scheint es 2 Parameter zu brauchen
+        super().__init__(model)
         self.id = unique_id
         self.home = home
         self.work = work
@@ -19,19 +21,17 @@ class Citizen(Agent):
         self.time_to_next = 0
         self.current_activity = Activity.SLEEPING
 
-        np.random.seed(42) # random Seed, um Tanks zufällig zu füllen
+        np.random.seed(42)  # random Seed, um Tanks zufällig zu füllen
         self.tank_mental_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.tank_physical_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.tank_leisure = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.tank_social_inclusion = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
-        self.tank_self_determination = Tank(100,np.random.randint(20, 100), np.random.randint(5, 30))
+        self.tank_self_determination = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.tank_food = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.action = Action()
         self.daily_schedule = DailySchedule()
 
-    # Nochmal schauen warum Enum vergleich nur über Enum.value geht
     def step(self):
-
         current_step = self.model.schedule.steps if hasattr(self.model.schedule, 'steps') else 0
         scheduled_activity = self.daily_schedule.get_activity_for_step(current_step)
         if scheduled_activity.value != self.current_activity.value:
@@ -78,3 +78,11 @@ class Citizen(Agent):
                 self.action.freetime_UGS(self)
             else:
                 self.action.freetime_home(self)
+
+    def show_Tanks(self):
+        print(f"Mental-Health:  {self.tank_mental_health.level}; "
+              f"Physical-Health: {self.tank_physical_health.level}; "
+              f"Leisure-Tank: {self.tank_leisure.level}; "
+              f"social-inclusion: {self.tank_social_inclusion.level}; "
+              f"self-determination: {self.tank_self_determination.level}; "
+              )
