@@ -60,7 +60,7 @@ class Citizen(Agent):
 
             for step in self.route:
                 if step in self.model.parks:
-                    self.action.path_UGS(self)
+                    self.action.path_UGS(self) #greenscore übergeben
                 else:
                     self.action.path_street(self)
             print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
