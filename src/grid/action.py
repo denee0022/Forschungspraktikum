@@ -34,21 +34,21 @@ class Action:
 
 #Start oder Zielknoten ist ein park
     def path_UGS(self, citizen):
-        citizen.tank_mental_health.update(10)
-        citizen.tank_physical_health.update(-10)
-        citizen.tank_leisure.update(10)
+        citizen.tank_mental_health.update(2)
+        citizen.tank_physical_health.update(-2)
+        citizen.tank_leisure.update(2)
         citizen.tank_social_inclusion.update(0)
         citizen.tank_self_determination.update(0)
-        citizen.tank_food.update(-10)
+        citizen.tank_food.update(-2)
 
 #Start und Zielknoten ist kein Park
     def path_street(self, citizen):
-        citizen.tank_mental_health.update(-10)
-        citizen.tank_physical_health.update(-10)
+        citizen.tank_mental_health.update(-2)
+        citizen.tank_physical_health.update(-2)
         citizen.tank_leisure.update(0)
         citizen.tank_social_inclusion.update(0)
         citizen.tank_self_determination.update(0)
-        citizen.tank_food.update(-10)
+        citizen.tank_food.update(-2)
 
     def eating(self, citizen):
         citizen.tank_mental_health.update(10)

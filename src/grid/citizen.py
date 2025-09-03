@@ -8,6 +8,7 @@ import random
 import numpy as np
 from citizien_prefence import CitizienPreferences
 
+np.random.seed(42)  # random Seed, um Tanks zufällig zu füllen
 
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work, citizien_preference=None):
@@ -20,13 +21,13 @@ class Citizen(Agent):
         self.route = []
         self.pos = home
         self.time_to_next = 0
-        self.current_activity = Activity.SLEEPING
+        self.current_activity = Activity.WORKING
 
         if citizien_preference is None:
             self.preference = CitizienPreferences()
         else:
             self.preference = citizien_preference
-        np.random.seed(42)  # random Seed, um Tanks zufällig zu füllen
+
         self.tank_mental_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.tank_physical_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.tank_leisure = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
@@ -66,8 +67,10 @@ class Citizen(Agent):
             self.model.grid.move_agent(self, goal)
             self.pos = goal
             self.route = []
-            if self.pos == self.current_goal:
-                self.execute_current_activity()
+            #if self.pos == self.current_goal:
+                #self.execute_current_activity()
+
+        self.execute_current_activity()
 
     def choose_leisure_location(self):
         tank_levels = self.get_tank_levels_dict()
