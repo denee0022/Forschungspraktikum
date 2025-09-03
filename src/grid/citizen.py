@@ -79,7 +79,7 @@ class Citizen(Agent):
             else:
                 self.action.freetime_home(self)
 
-    def show_Tanks(self):
+    def show_tanks(self):
         print(f"Mental-Health:  {self.tank_mental_health.level}; "
               f"Physical-Health: {self.tank_physical_health.level}; "
               f"Leisure-Tank: {self.tank_leisure.level}; "

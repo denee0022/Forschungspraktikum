@@ -86,4 +86,4 @@ class CityModel(Model):
         print("=== Agent Status ===")
         for agent in all_agents:
             print(f"Agent {agent.unique_id}: Position {agent.pos}, Aktivität: {agent.current_activity.value}")
-            agent.show_Tanks()
+            agent.show_tanks()
