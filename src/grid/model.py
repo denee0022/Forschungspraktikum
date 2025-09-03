@@ -13,7 +13,7 @@ from src.grid.roadNetwork import RoadNetwork
 
 class CityModel(Model):
     def __init__(self, width=6, height=6, n_agents=100, park_fraction=0.1, market_fraction=0.3, house_fraction=0.5,
-                 work_fraction=0.3, seed: Optional[int] = 42):
+                 work_fraction=0.3, green_score_park=75, seed: Optional[int] = 42):
         super().__init__()
 
         if seed is not None:
@@ -23,7 +23,7 @@ class CityModel(Model):
         mapping = {xy: i for i, xy in enumerate(graph.nodes())}
         graph = nx.relabel_nodes(graph, mapping)
 
-        self.road = RoadNetwork(graph)
+        self.road = RoadNetwork(graph, green_score_park)
         self.grid = NetworkGrid(self.road.graph)
         self.schedule = SimultaneousActivation(self)  #Agenten handeln gleichzeitig
 

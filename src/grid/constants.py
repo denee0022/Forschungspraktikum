@@ -8,6 +8,17 @@ class Activity(Enum):
     LEISURE = 3
 
 
+class PreferenceType(Enum):
+    MENTAL_HEALTH = "mental_health"
+    PHYSICAL_HEALTH = "physical_health"
+    LEISURE = "leisure"
+    EFFICIENCY = "efficiency"
+    GREEN_ENVIRONMENT = "green_environment"
+    SOCIAL_INCLUSION = "social_inclusion"
+    SELF_DETERMINATION = "self_determination"
+    FOOD = "food"
+
+
 # Schauen, ob man dies benutzt für Sauberkeit
 class LocationType(Enum):
     HOME = 0
