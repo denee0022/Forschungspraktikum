@@ -10,8 +10,9 @@ from citizien_prefence import CitizienPreferences
 
 np.random.seed(42)  # random Seed, um Tanks zufällig zu füllen
 
+
 class Citizen(Agent):
-    def __init__(self, unique_id, model, home, work, citizien_preference=None):
+    def __init__(self, unique_id, model, home, work, citizien_tank_preference=None, citizien_route_preference=None):
         # hier nochmal schauen. Bei mesa version 2.3.2 scheint es 2 Parameter zu brauchen
         super().__init__(model)
         self.id = unique_id
@@ -22,11 +23,7 @@ class Citizen(Agent):
         self.pos = home
         self.time_to_next = 0
         self.current_activity = Activity.WORKING
-
-        if citizien_preference is None:
-            self.preference = CitizienPreferences()
-        else:
-            self.preference = citizien_preference
+        self.preferences = CitizienPreferences(citizien_tank_preference, citizien_route_preference)
 
         self.tank_mental_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
         self.tank_physical_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
@@ -53,72 +50,23 @@ class Citizen(Agent):
 
             start = self.pos
             goal = self.current_goal
-            tank_levels = self.get_tank_levels_dict()
-            #self.route = self.model.road.shortest_path_sparse(start, goal)
-            self.route = self.model.road.shortest_path_sparse(start, goal)
-            print(f"Hallo: {self.route}")
 
-            for step in self.route:
-                if step in self.model.parks:
-                    self.action.path_UGS(self) #greenscore übergeben
+            route_weigths = self.preferences.route_weights
+            self.route = self.model.road.best_path(start, goal, route_weigths)
+
+            for node in self.route:
+                if node in self.model.parks:
+                    self.action.path_UGS(self, self.model.road.get_greenscore_park(node))  #greenscore übergeben
                 else:
                     self.action.path_street(self)
             print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
             self.model.grid.move_agent(self, goal)
             self.pos = goal
             self.route = []
-            #if self.pos == self.current_goal:
-                #self.execute_current_activity()
-
         self.execute_current_activity()
 
     def choose_leisure_location(self):
-        tank_levels = self.get_tank_levels_dict()
-        possible_locations = []
-
-        if hasattr(self.model, 'parks') and self.model.parks:
-            possible_locations.extend(list(self.model.parks))
-
-        #Niedriger Food-Tank
-        if (hasattr(self.model, 'supermarkets') and self.model.supermarkets and
-                tank_levels['food'] < 0.4):
-            possible_locations.extend(list(self.model.supermarkets))
-
-        # Zuhause bei sehr niedrigen Mental-Health Tanks
-        if tank_levels['mental_health'] < 0.3:
-            possible_locations.append(self.home)
-
-        if not possible_locations:
-            return self.home
-            # Einfache gewichtete Auswahl basierend auf Bedürfnissen
-            weights = []
-            for location in possible_locations:
-                weight = 1.0
-
-                # Höhere Gewichtung für Parks bei niedrigem Mental Health
-                if location in getattr(self.model, 'parks', set()):
-                    weight *= (1.0 + (1.0 - tank_levels['mental_health']) * 2.0)
-
-                # Höhere Gewichtung für Supermärkte bei niedrigem Food
-                elif hasattr(self.model, 'supermarkets') and location in self.model.supermarkets:
-                    weight *= (1.0 + (1.0 - tank_levels['food']) * 3.0)
-
-                # Höhere Gewichtung für Zuhause bei niedrigem Self-Determination
-                elif location == self.home:
-                    weight *= (1.0 + (1.0 - tank_levels['self_determination']) * 1.5)
-
-                weights.append(weight)
-
-            # Gewichtete Zufallsauswahl
-            weights = np.array(weights)
-            probabilities = weights / weights.sum()
-            chosen_idx = np.random.choice(len(possible_locations), p=probabilities)
-            chosen_location = possible_locations[chosen_idx]
-
-            print(f"Citizen {self.unique_id}: Freizeit-Location gewählt: {chosen_location}")
-            print(f"  Tanks: Mental={tank_levels['mental_health']:.2f}, Food={tank_levels['food']:.2f}")
-
-            return chosen_location
+        return None
 
     def execute_current_activity(self):
         if self.current_activity == Activity.SLEEPING:

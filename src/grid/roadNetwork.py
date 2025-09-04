@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import networkx as nx
 import numpy as np
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, csgraph
 from scipy.sparse.csgraph import dijkstra
 from constants import PreferenceType
 import random
@@ -109,9 +109,9 @@ class RoadNetwork:
         return 0.0
 
     # hier wird nur nach der TravelTime geschaut
-    def shortest_path_sparse(self, src: int, dst: int) -> List[int]:
+    def shortest_path_sparse(self, src: int, dst: int, sparse_matrix: csgraph) -> List[int]:
         """Dijkstra auf Sparse-Matrix."""
-        dist_matrix, predecessors = dijkstra(csgraph=self.sparse_travel_time, directed=False,
+        dist_matrix, predecessors = dijkstra(csgraph=sparse_matrix, directed=False,
                                              indices=src, return_predecessors=True)
         if np.isinf(dist_matrix[dst]):
             return []
@@ -130,78 +130,39 @@ class RoadNetwork:
                 f"Greenscore zwischen Knoten {path[i]} und {path[i + 1]} ist: {self.edge_greenscore(path[i], path[i + 1])}")
         return path
 
-    def calculate_edge_cost_with_preferences(self, edge, citizen_preferences, tank_levels):
-        u, v = edge
-        base_cost = self.edge_travel_time(u, v)
-        greenscore = self.edge_greenscore(u, v)
+    def calculate_edge_cost_with_preferences(self, a, b, route_weight_dict):
+        base_cost = self.edge_travel_time(a, b)
+        greenscore = self.edge_greenscore(a, b)
 
-        mental_health_need = max(0, abs(1.0 - tank_levels.get('mental_health', 1.0)))
-        physical_health_need = max(0, abs(1.0 - tank_levels.get('physical_health', 1.0)))
-        leisure_need = max(0, abs(1.0 - tank_levels.get('leisure', 1.0)))
+        efficiency_weight = route_weight_dict.get(PreferenceType.EFFICIENCY, 0.5)
+        green_weight = route_weight_dict.get(PreferenceType.GREEN_ENVIRONMENT, 0.5)
 
-        efficiency_weight = citizen_preferences.get_weight(PreferenceType.EFFICIENCY)
         efficiency_cost = base_cost * efficiency_weight
-
-        green_weight = citizen_preferences.get_weight(PreferenceType.GREEN_ENVIRONMENT)
-        green_reduction = greenscore * green_weight * 0.5
-
-        mental_health_weight = citizen_preferences.get_weight(PreferenceType.MENTAL_HEALTH)
-        mental_health_adjustment = mental_health_need * mental_health_weight * greenscore * 0.3
-
-        physical_health_weight = citizen_preferences.get_weight(PreferenceType.PHYSICAL_HEALTH)
-        physical_health_adjustment = physical_health_need * physical_health_weight * greenscore * 0.3
-
-        leisure_weight = citizen_preferences.get_weight(PreferenceType.LEISURE)
-        leisure_adjustment = leisure_need * leisure_weight * greenscore * 0.2
-
-        final_cost = (efficiency_cost - green_reduction -
-                      mental_health_adjustment - physical_health_adjustment -
-                      leisure_adjustment)
+        normalized_greenscore = greenscore / 100.0
+        green_reduction = normalized_greenscore * green_weight
+        final_cost = efficiency_cost - green_reduction
 
         return max(0.1, final_cost)
 
-    def build_preference_sparse_matrix(self, citizen_preferences, tank_levels):
+    def build_preference_sparse_matrix(self, route_weights_dict):
         rows, cols, adjusted_costs = [], [], []
 
         for u, v, d in self.graph.edges(data=True):
             i, j = self.index_of[u], self.index_of[v]
-
-            adjusted_cost = self.calculate_edge_cost_with_preferences(
-                (u, v), citizen_preferences, tank_levels
-            )
-
+            adjusted_cost = self.calculate_edge_cost_with_preferences(u, v, route_weights_dict)
             for (r, c) in [(i, j), (j, i)]:
                 rows.append(r)
                 cols.append(c)
                 adjusted_costs.append(adjusted_cost)
-
         return csr_matrix((adjusted_costs, (rows, cols)), shape=(self.n, self.n))
 
-    def best_path(self, src: int, dst: int, citizen_preferences, tank_levels) -> List[int]:
-        """
-        Dijkstra auf präferenz-angepasster Sparse-Matrix
-        """
-        # Erstelle angepasste Matrix
-        preference_matrix = self.sparse_travel_time
-        print(preference_matrix)
-        # Dijkstra mit angepasster Matrix
-        dist_matrix, predecessors = dijkstra(
-            csgraph=preference_matrix,
-            directed=False,
-            indices=src,
-            return_predecessors=True
-        )
-        if np.isinf(dist_matrix[dst]):
-            return []
-        # Pfad rekonstruieren
-        path = []
-        i = dst
-        while i != src:
-            path.append(i)
-            i = predecessors[i]
-            if i == -9999:
-                return []
-        path.append(src)
-        path.reverse()
-        return path
+    def best_path(self, src: int, dst: int, route_weights_dict) -> List[int]:
+        preference_matrix = self.build_preference_sparse_matrix(route_weights_dict)
+        return self.shortest_path_sparse(src, dst, preference_matrix)
+
+    def get_greenscore_park(self, park_node):
+        if park_node in self.park_greenscores:
+            return self.park_greenscores[park_node]
+        else:
+            return 0.0
 

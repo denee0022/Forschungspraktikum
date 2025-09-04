@@ -3,33 +3,54 @@ from constants import PreferenceType
 
 
 class CitizienPreferences:
-    def __init__(self, preference_weights=None):
-        if preference_weights is None:
-            self.weights = {
+    def __init__(self, preference_tank_weights=None, preference_route_weights=None):
+        if preference_tank_weights is None:  # Hier war "preference_weights" falsch
+            self.tank_weights = {
                 PreferenceType.MENTAL_HEALTH: np.random.uniform(0.1, 0.9),
                 PreferenceType.PHYSICAL_HEALTH: np.random.uniform(0.1, 0.9),
                 PreferenceType.LEISURE: np.random.uniform(0.1, 0.9),
-                PreferenceType.EFFICIENCY: np.random.uniform(0.1, 0.9),
-                PreferenceType.GREEN_ENVIRONMENT: np.random.uniform(0.1, 0.9),
                 PreferenceType.SOCIAL_INCLUSION: np.random.uniform(0.1, 0.9),
                 PreferenceType.SELF_DETERMINATION: np.random.uniform(0.1, 0.9),
                 PreferenceType.FOOD: np.random.uniform(0.1, 0.5)
             }
         else:
-            self.weights = preference_weights
+            self.tank_weights = preference_tank_weights
 
-        total_weight = sum(self.weights.values())
-        for pref_type in self.weights:
-            self.weights[pref_type] /= total_weight
+        if preference_route_weights is None:  # Separate Behandlung für route_weights
+            self.route_weights = {
+                PreferenceType.EFFICIENCY: np.random.uniform(0.1, 0.9),
+                PreferenceType.GREEN_ENVIRONMENT: np.random.uniform(0.1, 0.9)
+            }
+        else:
+            self.route_weights = preference_route_weights
 
-    def get_weight(self, preference_type: PreferenceType) -> float:
-        return self.weights.get(preference_type, 0.0)
+        total_tank_weight = sum(self.tank_weights.values())
+        for pref_type in self.tank_weights:
+            self.tank_weights[pref_type] /= total_tank_weight
 
-    def get_preference_vector(self) -> np.ndarray:
+        total_route_weight = sum(self.route_weights.values())
+        for pref_type in self.route_weights:
+            self.route_weights[pref_type] /= total_route_weight
+
+    def get_tank_weight(self, preference_type: PreferenceType) -> float:
+        return self.tank_weights.get(preference_type, 0.0)
+
+    def get_route_weight(self, preference_type: PreferenceType) -> float:
+        return self.route_weights.get(preference_type, 0.0)
+
+    def get_preference_tank_vector(self) -> np.ndarray:
         return np.array([
-            self.weights[PreferenceType.MENTAL_HEALTH],
-            self.weights[PreferenceType.PHYSICAL_HEALTH],
-            self.weights[PreferenceType.LEISURE],
-            self.weights[PreferenceType.EFFICIENCY],
-            self.weights[PreferenceType.GREEN_ENVIRONMENT]
+            self.tank_weights[PreferenceType.MENTAL_HEALTH],
+            self.tank_weights[PreferenceType.PHYSICAL_HEALTH],
+            self.tank_weights[PreferenceType.LEISURE],
+            self.tank_weights[PreferenceType.SOCIAL_INCLUSION],
+            self.tank_weights[PreferenceType.SELF_DETERMINATION],
+            self.tank_weights[PreferenceType.FOOD]
+
+        ])
+
+    def get_preference_route_vector(self) -> np.ndarray:
+        return np.array([
+            self.route_weights[PreferenceType.EFFICIENCY],
+            self.route_weights[PreferenceType.GREEN_ENVIRONMENT]
         ])
