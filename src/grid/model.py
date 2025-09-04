@@ -9,6 +9,7 @@ from mesa.space import NetworkGrid
 from mesa.time import SimultaneousActivation
 from src.grid.citizen import Citizen
 from src.grid.roadNetwork import RoadNetwork
+from mesa.datacollection import DataCollector
 
 
 class CityModel(Model):
@@ -45,11 +46,13 @@ class CityModel(Model):
         n_parks = max(1, int(len(all_nodes) * park_fraction))
         park_nodes = list(np.random.choice(available_for_parks, size=n_parks, replace=False))
         self.parks = set(park_nodes)
+        self.road.set_parks(self.parks)
 
         available_for_markets = list(set(all_nodes) - self.homes - self.workplaces - self.parks)
         n_supermarkets = max(1, int(len(all_nodes) * market_fraction))
         supermarket_nodes = list(np.random.choice(available_for_markets, size=n_supermarkets, replace=False))
         self.supermarkets = set(supermarket_nodes)
+        self.road.set_Supermarkets(self.supermarkets)
 
         citizens = []
         assigned_homes = []
@@ -79,7 +82,25 @@ class CityModel(Model):
             self.grid.place_agent(citizen, home)
             self.schedule.add(citizen)
 
+        self.datacollector = DataCollector(
+            model_reporters={
+                "Step": lambda m: m.schedule.steps
+            },
+            agent_reporters={
+                "pos": "pos",
+                "mental_health": lambda a: a.tank_mental_health.level,
+                "physical_health": lambda a: a.tank_physical_health.level,
+                "leisure": lambda a: a.tank_leisure.level,
+                "social_inclusion": lambda a: a.tank_social_inclusion.level,
+                "self_determination": lambda a: a.tank_self_determination.level,
+                "food": lambda a: a.tank_food.level,
+                "current_goal": lambda a: getattr(a, 'current_goal', None),
+                "current_activity": lambda a: getattr(a, 'current_activity', None)
+            }
+        )
+
     def step(self):
+        self.datacollector.collect(self)
         self.schedule.step()
         all_agents = self.grid.get_all_cell_contents()
 

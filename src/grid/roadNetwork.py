@@ -19,6 +19,7 @@ class RoadNetwork:
         self.n = len(self.index_of)
 
         self.parks = set()
+        self.supermarkets = set()
         self.park_greenscores = {}
 
         # Edge defaults
@@ -156,13 +157,51 @@ class RoadNetwork:
                 adjusted_costs.append(adjusted_cost)
         return csr_matrix((adjusted_costs, (rows, cols)), shape=(self.n, self.n))
 
-    def best_path(self, src: int, dst: int, route_weights_dict) -> List[int]:
+    def best_path(self, src: int, dst: int, route_weights_dict, home=None, locations=None, tank_weights=None) -> List[int]:
         preference_matrix = self.build_preference_sparse_matrix(route_weights_dict)
-        return self.shortest_path_sparse(src, dst, preference_matrix)
+        if locations is not None and len(locations) > 0:
+            best_score = float('inf')
+            best_route = None
+            best_goal = None
+            best_loc = None
+            for loc in locations:
+                if loc == 'supermarket':
+                    targets = self.supermarkets
+                elif loc == 'park':
+                    targets = self.parks
+                elif loc == 'home':
+                    targets = [home]
+                for target in targets:
+                    route = self.shortest_path_sparse(src, target, preference_matrix)
+                    cost = sum(self.edge_travel_time(route[i], route[i + 1]) for i in range(len(route) - 1))
+                    # Tankpräferenz einbeziehen
+                    if tank_weights is not None:
+                        if target in self.parks:
+                            tank_types = {PreferenceType.MENTAL_HEALTH, PreferenceType.SOCIAL_INCLUSION,
+                                          PreferenceType.PHYSICAL_HEALTH}
+                        elif target in self.supermarkets:
+                            tank_types = {PreferenceType.FOOD, PreferenceType.SELF_DETERMINATION,
+                                          PreferenceType.SOCIAL_INCLUSION}
+                        elif hasattr(self, 'home') and target == self.home:
+                            tank_types = {PreferenceType.SELF_DETERMINATION, PreferenceType.MENTAL_HEALTH}
+                        else:
+                            tank_types = set()
+                        for tank_type in tank_types:
+                            cost -= tank_weights.get(tank_type, 0)
+                    if cost < best_score:
+                        best_score = cost
+                        best_route = route
+                        best_goal = target
+                        best_loc = loc
+                return best_route, best_goal, best_loc
+        else:
+            return self.shortest_path_sparse(src, dst, preference_matrix)
+
+    def set_Supermarkets(self, supermarkets):
+        self.supermarkets = supermarkets
 
     def get_greenscore_park(self, park_node):
         if park_node in self.park_greenscores:
             return self.park_greenscores[park_node]
         else:
             return 0.0
-

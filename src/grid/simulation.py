@@ -4,7 +4,7 @@ if __name__ == "__main__":
     # Simulation initialisieren
     width = 6
     height = 6
-    n_agents = 10
+    n_agents = 4
     park_fraction = 0.1
     seed = 42
 
@@ -30,4 +30,7 @@ if __name__ == "__main__":
     for step in range(steps):
         print(f"\n--- Simulationsschritt {step+1} ---")
         model.step()
-
+    model_df = model.datacollector.get_model_vars_dataframe()
+    agent_df = model.datacollector.get_agent_vars_dataframe()
+    model_df.to_csv("model_log.csv")
+    agent_df.to_csv("agent_log.csv")
