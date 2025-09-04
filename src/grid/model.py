@@ -13,7 +13,7 @@ from mesa.datacollection import DataCollector
 
 
 class CityModel(Model):
-    def __init__(self, width=6, height=6, n_agents=100, park_fraction=0.1, market_fraction=0.1, house_fraction=0.5,
+    def __init__(self, width=6, height=6, n_agents=100, park_fraction=0.1, market_fraction=0.1, house_fraction=0.3,
                  work_fraction=0.3, green_score_park=75, seed: Optional[int] = 42):
         super().__init__()
 
@@ -30,14 +30,14 @@ class CityModel(Model):
 
         all_nodes = list(self.road.graph.nodes())
 
-        if n_agents > len(all_nodes):
-            raise ValueError("Mehr Agenten als Knoten!")
+        #if n_agents > len(all_nodes):
+        #    raise ValueError("Mehr Agenten als Knoten!")
 
-        n_houses = int(n_agents * house_fraction)
+        n_houses = int(len(all_nodes) * house_fraction)
         home_nodes = list(np.random.choice(all_nodes, size=n_houses, replace=False))
         self.homes = set(home_nodes)
 
-        n_workplaces = int(n_agents * work_fraction)
+        n_workplaces = int(len(all_nodes) * work_fraction)
         available_for_workplaces = list(set(all_nodes) - set(home_nodes))
         workplace_nodes = list(np.random.choice(available_for_workplaces, size=n_workplaces, replace=False))
         self.workplaces = set(workplace_nodes)

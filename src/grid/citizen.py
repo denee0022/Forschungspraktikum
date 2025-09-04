@@ -40,7 +40,7 @@ class Citizen(Agent):
         #loc = ""
         current_step = self.model.schedule.steps if hasattr(self.model.schedule, 'steps') else 0
         scheduled_activity = self.daily_schedule.get_activity_for_step(current_step)
-        if scheduled_activity.value != self.current_activity.value:
+        if scheduled_activity.value != self.current_activity.value or self.current_activity.value == Activity.LEISURE.value:
             start = self.pos
             goal = self.current_goal
             route_weigths = self.preferences.route_weights

@@ -116,6 +116,7 @@ class RoadNetwork:
         """Dijkstra auf Sparse-Matrix."""
         dist_matrix, predecessors = dijkstra(csgraph=sparse_matrix, directed=False,
                                              indices=src, return_predecessors=True)
+
         if np.isinf(dist_matrix[dst]):
             return []
         # Pfad rekonstruieren
@@ -128,9 +129,9 @@ class RoadNetwork:
                 return []
         path.append(int(src))
         path.reverse()
-        for i in range(len(path) - 1):
-            print(
-                f"Greenscore zwischen Knoten {path[i]} und {path[i + 1]} ist: {self.edge_greenscore(path[i], path[i + 1])}")
+        #for i in range(len(path) - 1):
+            #print(
+            #    f"Greenscore zwischen Knoten {path[i]} und {path[i + 1]} ist: {self.edge_greenscore(path[i], path[i + 1])}")
         return path
 
     def calculate_edge_cost_with_preferences(self, a, b, route_weight_dict):
@@ -190,14 +191,23 @@ class RoadNetwork:
                             tank_types = set()
                         for tank_type in tank_types:
                             cost -= tank_weights.get(tank_type, 0)
-                    if cost < best_score:
-                        best_score = cost
-                        best_route = route
-                        best_goal = target
-                        best_loc = loc
-                return best_route, best_goal, best_loc
+                            """print(f"Kosten: {cost}")
+                            print(f"Route: {route}")
+                            print(f"Target: {target}")
+                            print(f"Loc: {loc}")"""
+                            if cost < best_score:
+                                best_score = cost
+                                best_route = route
+                                best_goal = target
+                                best_loc = loc
+                                """print(f"Beste Score: {best_score}")
+                                print(f"Beste Route: {best_route}")
+                                print(f"Beste Goal: {best_goal}")
+                                print(f"Beste Loc: {best_loc}")"""
+            return best_route, best_goal, best_loc
         else:
             return self.shortest_path_sparse(src, dst, preference_matrix)
+
 
     def set_Supermarkets(self, supermarkets):
         self.supermarkets = supermarkets
