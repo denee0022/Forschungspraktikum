@@ -2,10 +2,10 @@ from src.grid.model import CityModel
 
 if __name__ == "__main__":
     # Simulation initialisieren
-    width = 6
-    height = 6
+    width = 5
+    height = 5
     n_agents = 4
-    park_fraction = 0.1
+    park_fraction = 0.289
     seed = 42
 
     model = CityModel(width=width, height=height, n_agents=n_agents,
@@ -26,9 +26,9 @@ if __name__ == "__main__":
     #print(f"NX-Graph: {model.road.sparse}")
 
     # Simulation für ein paar Schritte laufen lassen
-    steps = 100
+    steps = 48
     for step in range(steps):
-        print(f"\n--- Simulationsschritt {step+1} ---")
+        print(f"\n--- Simulationsschritt {step} -> {(step+1)%24}:00Uhr ---")
         model.step()
     model_df = model.datacollector.get_model_vars_dataframe()
     agent_df = model.datacollector.get_agent_vars_dataframe()

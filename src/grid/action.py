@@ -67,9 +67,9 @@ class Action:
         citizen.tank_food.update(-2)
 
     def eating(self, citizen):
-        citizen.tank_mental_health.update(1)
-        citizen.tank_physical_health.update(2)
-        citizen.tank_leisure.update(1)
-        citizen.tank_social_inclusion.update(1)
-        citizen.tank_self_determination.update(1)
-        citizen.tank_food.update(1)
+        citizen.tank_mental_health.update(-1)
+        citizen.tank_physical_health.update(-2)
+        citizen.tank_leisure.update(-1)
+        citizen.tank_social_inclusion.update(-1)
+        citizen.tank_self_determination.update(-1)
+        citizen.tank_food.update(-20)

@@ -22,6 +22,8 @@ class RoadNetwork:
         self.supermarkets = set()
         self.park_greenscores = {}
 
+        self.targets = set()
+
         # Edge defaults
         for u, v, data in self.graph.edges(data=True):
             """
@@ -166,12 +168,12 @@ class RoadNetwork:
             best_loc = None
             for loc in locations:
                 if loc == 'supermarket':
-                    targets = self.supermarkets
+                    self.targets = self.supermarkets
                 elif loc == 'park':
-                    targets = self.parks
+                    self.targets = self.parks
                 elif loc == 'home':
-                    targets = [home]
-                for target in targets:
+                    self.targets = [home]
+                for target in self.targets:
                     route = self.shortest_path_sparse(src, target, preference_matrix)
                     cost = sum(self.edge_travel_time(route[i], route[i + 1]) for i in range(len(route) - 1))
                     # Tankpräferenz einbeziehen
@@ -182,7 +184,7 @@ class RoadNetwork:
                         elif target in self.supermarkets:
                             tank_types = {PreferenceType.FOOD, PreferenceType.SELF_DETERMINATION,
                                           PreferenceType.SOCIAL_INCLUSION}
-                        elif hasattr(self, 'home') and target == self.home:
+                        elif target == home:
                             tank_types = {PreferenceType.SELF_DETERMINATION, PreferenceType.MENTAL_HEALTH}
                         else:
                             tank_types = set()

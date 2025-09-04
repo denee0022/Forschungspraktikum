@@ -15,13 +15,14 @@ np.random.seed(42)  # random Seed, um Tanks zufällig zu füllen
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work, citizien_tank_preference=None, citizien_route_preference=None):
         # hier nochmal schauen. Bei mesa version 2.3.2 scheint es 2 Parameter zu brauchen
-        super().__init__(model)
+        super().__init__(unique_id, model)
         self.id = unique_id
         self.home = home
         self.work = work
         self.current_goal = work
         self.route = []
         self.pos = home
+        self.location = "home"
         self.time_to_next = 0
         self.current_activity = Activity.SLEEPING
         self.preferences = CitizienPreferences(citizien_tank_preference, citizien_route_preference)
@@ -36,6 +37,7 @@ class Citizen(Agent):
         self.daily_schedule = DailySchedule()
 
     def step(self):
+        #loc = ""
         current_step = self.model.schedule.steps if hasattr(self.model.schedule, 'steps') else 0
         scheduled_activity = self.daily_schedule.get_activity_for_step(current_step)
         if scheduled_activity.value != self.current_activity.value:
@@ -47,15 +49,19 @@ class Citizen(Agent):
             if self.current_activity.value == Activity.WORKING.value:
                 self.current_goal = self.work
                 self.route = self.model.road.best_path(start, goal, route_weigths)
+                self.location = "work"
             elif self.current_activity.value == Activity.LEISURE.value:
                 locations = self.choose_leisure_location()
                 tank_weights = self.preferences.tank_weights
-                self.route, self.current_goal, loc = self.model.road.best_path(start, goal, route_weigths, self.home,
+                self.route, self.current_goal, self.location = self.model.road.best_path(start, goal, route_weigths, self.home,
                                                                                locations, tank_weights)
+                print(f"Current_goal leisure= {self.current_goal}")
+                print(f"goal leisure= {goal}")
             else:  # SLEEPING
                 self.current_goal = self.home
                 self.current_activity = Activity.SLEEPING
                 self.route = self.model.road.best_path(start, goal, route_weigths)
+                self.location = "home"
             print(f"Agent {self.unique_id} Position: {self.pos}, Ziel: {self.current_goal}")
             for node in self.route:
                 if node in self.model.parks:
@@ -65,10 +71,11 @@ class Citizen(Agent):
                     self.action.path_street(self)
                     print(f"Agent {self.unique_id} geht über Straße")
             print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
-            self.model.grid.move_agent(self, goal)
-            self.pos = goal
+            self.model.grid.move_agent(self, self.current_goal)
+            self.pos = self.current_goal
             self.route = []
-        self.execute_current_activity()
+        self.execute_current_activity(self.location)
+        print(f"Agent {self.unique_id} ist jetzt an Knoten {self.pos}")
 
     def choose_leisure_location(self):
         tank_map = {
@@ -96,17 +103,20 @@ class Citizen(Agent):
             tanks = [name for name, _ in under_threshold]
             return self.best_location_for_tanks(tanks)
 
-    def execute_current_activity(self):
+    def execute_current_activity(self, location):
+        print(f"location: {location}")
         if self.current_activity == Activity.SLEEPING:
             self.action.sleeping(self)
         elif self.current_activity == Activity.WORKING:
             self.action.working(self)
         elif self.current_activity == Activity.LEISURE:
             # Je nach Ort verschiedene Freizeitaktivitäten
-            if self.pos in getattr(self.model, 'parks', set()):
+            if location == "park":
+                    #self.pos in getattr(self.model, 'parks', set())):
                 print(f"Agent {self.unique_id} geht zum Park")
                 self.action.freetime_UGS(self)
-            elif self.pos in getattr(self.model, 'home', set()):
+            elif location == "home":
+                    #self.pos in getattr(self.model, 'home', set()):
                 print(f"Agent {self.unique_id} geht nach Hause")
                 self.action.freetime_home(self)
             else:

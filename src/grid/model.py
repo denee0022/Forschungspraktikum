@@ -13,7 +13,7 @@ from mesa.datacollection import DataCollector
 
 
 class CityModel(Model):
-    def __init__(self, width=6, height=6, n_agents=100, park_fraction=0.1, market_fraction=0.3, house_fraction=0.5,
+    def __init__(self, width=6, height=6, n_agents=100, park_fraction=0.1, market_fraction=0.1, house_fraction=0.5,
                  work_fraction=0.3, green_score_park=75, seed: Optional[int] = 42):
         super().__init__()
 
