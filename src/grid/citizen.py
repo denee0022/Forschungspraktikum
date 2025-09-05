@@ -33,6 +33,8 @@ class Citizen(Agent):
         self.tank_social_inclusion = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
         self.tank_self_determination = Tank(100, np.random.randint(30, 100),np.random.randint(20,30))
         self.tank_food = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
+
+        self.life_quality = 0
         self.action = Action()
         self.daily_schedule = DailySchedule()
 
@@ -166,3 +168,12 @@ class Citizen(Agent):
         for tank in tanks:
             locations.extend(location_map.get(tank, []))
         return list(set(locations))
+
+    def quality_of_life(self):
+        mental_health = self.tank_mental_health.level
+        physical_health = self.tank_physical_health.level
+        self_determination = self.tank_self_determination.level
+        self_leisure = self.tank_leisure.level
+        social_inclusion = self.tank_social_inclusion.level
+        self.life_quality = (mental_health + physical_health + self_determination + self_leisure + social_inclusion) / 5
+        return self.life_quality

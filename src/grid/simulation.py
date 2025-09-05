@@ -44,3 +44,7 @@ if __name__ == "__main__":
     agent_df = model.datacollector.get_agent_vars_dataframe()
     model_df.to_csv("model_log.csv")
     agent_df.to_csv("agent_log.csv")
+    for agent in model.schedule.agents:
+        print(f"Agent {agent.unique_id} startet bei Knoten {agent.pos}")
+        print(agent.quality_of_life())
+
