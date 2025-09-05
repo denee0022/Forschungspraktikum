@@ -15,7 +15,7 @@ np.random.seed(42)  # random Seed, um Tanks zufällig zu füllen
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work, citizien_tank_preference=None, citizien_route_preference=None):
         # hier nochmal schauen. Bei mesa version 2.3.2 scheint es 2 Parameter zu brauchen
-        super().__init__(unique_id, model)
+        super().__init__(model)
         self.id = unique_id
         self.home = home
         self.work = work
@@ -27,12 +27,12 @@ class Citizen(Agent):
         self.current_activity = Activity.SLEEPING
         self.preferences = CitizienPreferences(citizien_tank_preference, citizien_route_preference)
 
-        self.tank_mental_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
-        self.tank_physical_health = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
-        self.tank_leisure = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
-        self.tank_social_inclusion = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
-        self.tank_self_determination = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
-        self.tank_food = Tank(100, np.random.randint(20, 100), np.random.randint(5, 30))
+        self.tank_mental_health = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
+        self.tank_physical_health = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
+        self.tank_leisure = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
+        self.tank_social_inclusion = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
+        self.tank_self_determination = Tank(100, np.random.randint(30, 100),np.random.randint(20,30))
+        self.tank_food = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
         self.action = Action()
         self.daily_schedule = DailySchedule()
 
@@ -40,7 +40,9 @@ class Citizen(Agent):
         #loc = ""
         current_step = self.model.schedule.steps if hasattr(self.model.schedule, 'steps') else 0
         scheduled_activity = self.daily_schedule.get_activity_for_step(current_step)
-        if scheduled_activity.value != self.current_activity.value or self.current_activity.value == Activity.LEISURE.value:
+        if (scheduled_activity.value != self.current_activity.value or
+                self.current_activity.value == Activity.LEISURE.value):
+            print("Sind drin")
             start = self.pos
             route_weigths = self.preferences.route_weights
             self.current_activity = scheduled_activity
@@ -57,6 +59,7 @@ class Citizen(Agent):
                                                                                          locations, tank_weights)
                 print(f"Current_goal leisure= {self.current_goal}")
                 print(f"goal leisure= {self.current_goal}")
+                print(f"Kürzeste Route für Agent {self.unique_id} in Leisure: {self.route}")
             else:  # SLEEPING
                 self.current_goal = self.home
                 self.current_activity = Activity.SLEEPING
@@ -65,7 +68,7 @@ class Citizen(Agent):
                 self.location = "home"
             print(f"Agent {self.unique_id} Position: {self.pos}, Ziel: {self.current_goal}")
             for node in self.route:
-                if node in self.model.parks:
+                if node in self.model.parks and (len(self.route) != 1):
                     self.action.path_UGS(self, self.model.road.get_greenscore_park(node))
                     print(f"Agent {self.unique_id} geht über Park")
                 else:
@@ -91,19 +94,26 @@ class Citizen(Agent):
         tank_levels = self.get_tank_levels_dict()
         under_threshold = []
         for name, (tank, pref_type) in tank_map.items():
-            if tank_levels[name] < tank.threshold:
+            if tank_levels[name] < (tank.threshold / tank.capacity):
+                print(f"Tank-Name: {name}: Tank-Level: {tank_levels[name]}, Tank-Threshold: {tank.threshold / tank.capacity}")
                 under_threshold.append((name, pref_type))
-        if len(under_threshold) == 0:
+
+        if not under_threshold:
+            # Kein Tank unter Threshold: Standard-Location zurückgeben
+            print("Alle Tanks über Threshold, gehe nach Hause.")
+            return self.best_location_for_tanks(['mental_health'])  # oder ['home'] je nach Mapping
+
+        if len(under_threshold) == 1:
             best = max(
                 tank_map.items(),
                 key=lambda x: self.preferences.get_tank_weight(x[1][1])
             )
+            print(f"Leisure_location: {self.best_location_for_tanks([best[0]])}")
             return self.best_location_for_tanks([best[0]])
-
         else:
             tanks = [name for name, _ in under_threshold]
+            print(f"Leisure_location: {self.best_location_for_tanks(tanks)}")
             return self.best_location_for_tanks(tanks)
-
     def execute_current_activity(self, location):
         print(f"location: {location}")
         if self.current_activity == Activity.SLEEPING:
@@ -146,11 +156,11 @@ class Citizen(Agent):
     def best_location_for_tanks(self, tanks):
         # tanks: Liste von Strings, z.B. ['mental_health', 'food']
         location_map = {
-            'mental_health': ['park', 'home', 'supermarket'],
+            'mental_health': ['home'],
             'physical_health': ['park'],
             'leisure': ['home'],
-            'social_inclusion': ['park', 'supermarket'],
-            'self_determination': ['supermarket', 'home'],
+            'social_inclusion': ['park'],
+            'self_determination': ['home'],
             'food': ['supermarket']
         }
         locations = []

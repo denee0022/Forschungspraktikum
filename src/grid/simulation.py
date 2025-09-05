@@ -8,14 +8,14 @@ if __name__ == "__main__":
     hours = 100
     seed = 42
 
-    testModel = CityModel(width=5, height=5, n_agents=7,
-                      park_fraction=0.289, seed=seed)
+    #testModel = CityModel(width=5, height=5, n_agents=7,
+                     # park_fraction=0.289, seed=seed)
 
-    #model_N1_goodQ = CityModel(5, 5, 132, 0.289, market_fraction=market_fraction, house_fraction=house_fraction, work_fraction=work_fraction, seed=seed)
+    model_N1_goodQ = CityModel(5, 5, 100, 0.289, market_fraction=market_fraction, house_fraction=house_fraction, work_fraction=work_fraction, seed=seed)
     #model_N2_badQ = CityModel(6, 5, 144, 0.247, market_fraction=market_fraction, house_fraction=house_fraction, work_fraction=work_fraction, seed=seed)
 
     #Aktuelles Model
-    model = testModel
+    model = model_N1_goodQ
 
     # Test: alle Agenten initial positionieren
     print("Aufbau des Experiments:")
