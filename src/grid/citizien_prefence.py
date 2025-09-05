@@ -11,7 +11,7 @@ class CitizienPreferences:
                 PreferenceType.LEISURE: np.random.uniform(0.1, 0.9),
                 PreferenceType.SOCIAL_INCLUSION: np.random.uniform(0.1, 0.9),
                 PreferenceType.SELF_DETERMINATION: np.random.uniform(0.1, 0.9),
-                PreferenceType.FOOD: np.random.uniform(0.1, 0.5)
+                PreferenceType.FOOD: np.random.uniform(0.1, 0.9)
             }
         else:
             self.tank_weights = preference_tank_weights
@@ -54,3 +54,7 @@ class CitizienPreferences:
             self.route_weights[PreferenceType.EFFICIENCY],
             self.route_weights[PreferenceType.GREEN_ENVIRONMENT]
         ])
+
+    def show_preferences(self):
+        print(f"Route-Präferenz-Vektoren: {self.get_preference_route_vector()}")
+        print(f"Tank-Präferenz-Vektoren: {self.get_preference_tank_vector()}")

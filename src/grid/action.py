@@ -35,7 +35,6 @@ class Action:
 
 #Start oder Zielknoten ist ein park
     def path_UGS(self, citizen, greenscore):
-
         if greenscore >= 66:
             citizen.tank_mental_health.update(2)
             citizen.tank_physical_health.update(-2)

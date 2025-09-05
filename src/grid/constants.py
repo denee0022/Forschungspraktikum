@@ -7,7 +7,6 @@ class Activity(Enum):
     WORKING = 2
     LEISURE = 3
 
-
 class PreferenceType(Enum):
     MENTAL_HEALTH = "mental_health"
     PHYSICAL_HEALTH = "physical_health"

@@ -185,7 +185,7 @@ class RoadNetwork:
                     # Tankpräferenz einbeziehen
                     if tank_weights is not None:
                         if target in self.parks:
-                            tank_types = {PreferenceType.FOOD}
+                            tank_types = {PreferenceType.SELF_DETERMINATION, PreferenceType.PHYSICAL_HEALTH}
                         elif target in self.supermarkets:
                             tank_types = {PreferenceType.FOOD}
                         elif target == home:

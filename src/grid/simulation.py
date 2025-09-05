@@ -5,7 +5,7 @@ if __name__ == "__main__":
     market_fraction = 0.1
     house_fraction = 0.3
     work_fraction = 0.3
-    hours = 48
+    hours = 100
     seed = 42
 
     testModel = CityModel(width=5, height=5, n_agents=7,
@@ -28,6 +28,8 @@ if __name__ == "__main__":
     print("Startpositionen der Agenten:")
     for agent in model.schedule.agents:
         print(f"Agent {agent.unique_id} startet bei Knoten {agent.pos}")
+        agent.show_tanks()
+        agent.preferences.show_preferences()
     print("______________________________________________________________________")
     #print(f"NX-Graph: {model.road.sparse}")
 
