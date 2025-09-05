@@ -8,21 +8,27 @@ from scipy.sparse.csgraph import dijkstra
 from constants import PreferenceType
 import random
 
+np.random.seed(42)
 
 class RoadNetwork:
 
-    def __init__(self, graph: nx.Graph, greenscore_park):
+    def __init__(self, graph: nx.Graph):
         self.graph = graph
 
         self.index_of = {n: i for i, n in enumerate(self.graph.nodes)}
         self.node_of = {i: n for n, i in self.index_of.items()}
         self.n = len(self.index_of)
 
-        self.parks = set()
         self.supermarkets = set()
-        self.park_greenscores = {}
+        self.parks = set()
+        self.park_good = set()
+        self.park_medium = set()
+        self.park_bad = set()
 
         self.targets = set()
+
+        self.parks = {}
+        self.park_greenscores = {}
 
         # Edge defaults
         for u, v, data in self.graph.edges(data=True):
@@ -33,19 +39,28 @@ class RoadNetwork:
             """
             time = random.uniform(0.5, 2.0)  # zufällige Länge zwischen 0.5 und 2.0
             data["travel_time"] = time
-            data["greenscore"] = greenscore_park
+            data["greenscore"] = 0
         self._build_sparse()
 
-    def set_parks(self, park_nodes):
-        self.parks = park_nodes
-        self.park_greenscores = {}
+    def set_parks(self, parks, park_good_quality, park_medium_quality, park_bad_quality):
+        self.parks = parks
+        self.park_good = park_good_quality
+        self.park_medium = park_medium_quality
+        self.park_bad = park_bad_quality
 
-        for park_node in self.parks:
-            self.park_greenscores[park_node] = random.uniform(0, 100)
+        for park_node in self.park_good:
+            self.graph.nodes[park_node]['greenscore'] = np.random.randint(66,100)
 
-        self.calculate_road_greenscores()
+        for park_node in self.park_medium:
+            self.graph.nodes[park_node]['greenscore'] = np.random.randint(33,65)
+
+        for park_node in self.park_bad:
+            self.graph.nodes[park_node]['greenscore'] = np.random.randint(1,32)
+
+        #self.calculate_road_greenscores()
         self._build_sparse()
 
+    """
     def calculate_road_greenscores(self, max_distance=3):
         park_influences = {}
 
@@ -79,7 +94,7 @@ class RoadNetwork:
             final_score = min(100, base_score + avg_influence * 25)
 
             data["greenscore"] = max(0, final_score)
-
+    """
     def _build_sparse(self):
         rows, cols, travel_times, greenscores = [], [], [], []
         for u, v, d in self.graph.edges(data=True):

@@ -13,8 +13,11 @@ from mesa.datacollection import DataCollector
 
 
 class CityModel(Model):
-    def __init__(self, width=6, height=6, n_agents=100, park_fraction=0.1, market_fraction=0.1, house_fraction=0.3,
-                 work_fraction=0.3, green_score_park=75, seed: Optional[int] = 42):
+    def __init__(self, width=6, height=6, n_agents=100, park_fraction=0.1,
+                 park_good_fraction=1, park_medium_fraction=0, park_bad_fraction=0,
+                 market_fraction=0.1, house_fraction=0.3,
+                 work_fraction=0.3,
+                 seed: Optional[int] = 42):
         super().__init__()
 
         if seed is not None:
@@ -24,7 +27,7 @@ class CityModel(Model):
         mapping = {xy: i for i, xy in enumerate(graph.nodes())}
         graph = nx.relabel_nodes(graph, mapping)
 
-        self.road = RoadNetwork(graph, green_score_park)
+        self.road = RoadNetwork(graph)
         self.grid = NetworkGrid(self.road.graph)
         self.schedule = SimultaneousActivation(self)  #Agenten handeln gleichzeitig
 
@@ -32,7 +35,7 @@ class CityModel(Model):
 
         #if n_agents > len(all_nodes):
         #    raise ValueError("Mehr Agenten als Knoten!")
-
+        print(all_nodes)
         n_houses = int(len(all_nodes) * house_fraction)
         home_nodes = list(np.random.choice(all_nodes, size=n_houses, replace=False))
         self.homes = set(home_nodes)
@@ -46,7 +49,18 @@ class CityModel(Model):
         n_parks = max(1, int(len(all_nodes) * park_fraction))
         park_nodes = list(np.random.choice(available_for_parks, size=n_parks, replace=False))
         self.parks = set(park_nodes)
-        self.road.set_parks(self.parks)
+
+        n_parks_good = max(1, int(n_parks * park_good_fraction))
+        n_parks_medium = max(1, int(n_parks * park_medium_fraction))
+        n_parks_bad = max(1, int(n_parks * park_bad_fraction))
+        print(n_parks_good, n_parks_medium, n_parks_bad)
+
+        self.parks_good = list(np.random.choice(park_nodes, size=n_parks_good, replace=False))
+        remaining_after_good = list(set(park_nodes) - set(self.parks_good))
+        self.parks_medium = list(np.random.choice(remaining_after_good, size=n_parks_medium, replace=False))
+        remaining_after_good_medium = list(set(remaining_after_good) - set(self.parks_medium))
+        self.parks_bad = list(np.random.choice(remaining_after_good_medium, size=n_parks_bad, replace=False))
+        self.road.set_parks(self.parks, self.parks_good, self.parks_medium, self.parks_bad)
 
         available_for_markets = list(set(all_nodes) - self.homes - self.workplaces - self.parks)
         n_supermarkets = max(1, int(len(all_nodes) * market_fraction))

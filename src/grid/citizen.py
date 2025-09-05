@@ -77,8 +77,8 @@ class Citizen(Agent):
             #print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
             self.model.grid.move_agent(self, self.current_goal)
             self.pos = self.current_goal
-            self.route = []
         self.execute_current_activity(self.location)
+        self.route = []
         print(f"Agent {self.unique_id} ist jetzt an Knoten {self.pos}")
 
     def choose_leisure_location(self):
@@ -123,9 +123,8 @@ class Citizen(Agent):
         elif self.current_activity == Activity.LEISURE:
             # Je nach Ort verschiedene Freizeitaktivitäten
             if location == "park":
-                #self.pos in getattr(self.model, 'parks', set())):
-                print(f"Agent {self.unique_id} geht zum Park")
-                self.action.freetime_UGS(self)
+                park = self.route[-1]
+                self.action.freetime_UGS(self, self.model.road.get_greenscore_park(park))
             elif location == "home":
                 #self.pos in getattr(self.model, 'home', set()):
                 print(f"Agent {self.unique_id} geht nach Hause")
