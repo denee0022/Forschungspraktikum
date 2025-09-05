@@ -101,14 +101,18 @@ class RoadNetwork:
             return float(travel_time), float(greenscore)
         return math.inf, 0.0
 
-    def edge_travel_time(self, a, b) -> float:
+    def edge_travel_time(self, a, b, matrix=None) -> float:
+        if matrix is None:
+            matrix = self.sparse_travel_time
         if 0 <= a < self.n and 0 <= b < self.n:
-            return float(self.sparse_travel_time[a, b])
+            return float(matrix[a, b])
         return math.inf
 
-    def edge_greenscore(self, a: int, b: int) -> float:
+    def edge_greenscore(self, a: int, b: int, matrix=None) -> float:
+        if matrix is None:
+            matrix = self.sparse_greenscore
         if 0 <= a < self.n and 0 <= b < self.n:
-            return float(self.sparse_greenscore[a, b])
+            return float(matrix[a, b])
         return 0.0
 
     # hier wird nur nach der TravelTime geschaut
@@ -176,17 +180,16 @@ class RoadNetwork:
                     self.targets = [home]
                 for target in self.targets:
                     route = self.shortest_path_sparse(src, target, preference_matrix)
-                    cost = sum(self.edge_travel_time(route[i], route[i + 1]) for i in range(len(route) - 1))
+                    cost = sum(self.edge_travel_time(route[i], route[i + 1], matrix=preference_matrix) for i in
+                               range(len(route) - 1))
                     # Tankpräferenz einbeziehen
                     if tank_weights is not None:
                         if target in self.parks:
-                            tank_types = {PreferenceType.MENTAL_HEALTH, PreferenceType.SOCIAL_INCLUSION,
-                                          PreferenceType.PHYSICAL_HEALTH}
+                            tank_types = {PreferenceType.FOOD}
                         elif target in self.supermarkets:
-                            tank_types = {PreferenceType.FOOD, PreferenceType.SELF_DETERMINATION,
-                                          PreferenceType.SOCIAL_INCLUSION}
+                            tank_types = {PreferenceType.FOOD}
                         elif target == home:
-                            tank_types = {PreferenceType.SELF_DETERMINATION, PreferenceType.MENTAL_HEALTH}
+                            tank_types = {PreferenceType.MENTAL_HEALTH}
                         else:
                             tank_types = set()
                         for tank_type in tank_types:
