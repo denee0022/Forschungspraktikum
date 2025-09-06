@@ -23,13 +23,11 @@ class CityModel(Model):
         if seed is not None:
             random.seed(seed)
             np.random.seed(seed)
-        graph = nx.grid_2d_graph(width, height)
-        mapping = {xy: i for i, xy in enumerate(graph.nodes())}
-        graph = nx.relabel_nodes(graph, mapping)
+        graph = nx.complete_graph(width * height)
 
         self.road = RoadNetwork(graph)
         self.grid = NetworkGrid(self.road.graph)
-        self.schedule = SimultaneousActivation(self)  #Agenten handeln gleichzeitig
+        self.schedule = SimultaneousActivation(self)
 
         all_nodes = list(self.road.graph.nodes())
 

@@ -10,6 +10,7 @@ import random
 
 np.random.seed(42)
 
+
 class RoadNetwork:
 
     def __init__(self, graph: nx.Graph):
@@ -26,8 +27,6 @@ class RoadNetwork:
         self.park_bad = set()
 
         self.targets = set()
-
-        self.parks = {}
         self.park_greenscores = {}
 
         # Edge defaults
@@ -49,36 +48,37 @@ class RoadNetwork:
         self.park_bad = park_bad_quality
 
         for park_node in self.park_good:
-            self.graph.nodes[park_node]['greenscore'] = np.random.randint(66,100)
+            self.graph.nodes[park_node]['greenscore'] = np.random.randint(66, 100)
 
         for park_node in self.park_medium:
-            self.graph.nodes[park_node]['greenscore'] = np.random.randint(33,65)
+            self.graph.nodes[park_node]['greenscore'] = np.random.randint(33, 65)
 
         for park_node in self.park_bad:
-            self.graph.nodes[park_node]['greenscore'] = np.random.randint(1,32)
+            self.graph.nodes[park_node]['greenscore'] = np.random.randint(1, 32)
 
-        #self.calculate_road_greenscores()
-        self._build_sparse()
+        self.calculate_road_greenscores()
 
-    """
-    def calculate_road_greenscores(self, max_distance=3):
+    def calculate_road_greenscores(self, max_distance=1):
         park_influences = {}
+        all_park_types = [
+            self.park_good,
+            self.park_medium,
+            self.park_bad
+        ]
 
-        for park_node in self.parks:
-            distances = nx.single_source_shortest_path_length(
-                self.graph, park_node, cutoff=max_distance
-            )
-
-            park_score = self.park_greenscores[park_node]
-
-            for node, distance in distances.items():
-                if node not in park_influences:
-                    park_influences[node] = []
-                park_influences[node].append((park_score, distance))
+        for park_set in all_park_types:
+            for park_node in park_set:
+                park_score = self.graph.nodes[park_node].get('greenscore', 0)
+                distances = nx.single_source_shortest_path_length(
+                    self.graph, park_node, cutoff=max_distance
+                )
+                for node, distance in distances.items():
+                    if node not in park_influences:
+                        park_influences[node] = []
+                    park_influences[node].append((park_score, distance))
 
         for u, v, data in self.graph.edges(data=True):
-            base_score = data.get("greenscore", 30)
-
+            base_score = data.get("greenscore", 0)
             total_influence = 0
             node_count = 0
 
@@ -94,7 +94,10 @@ class RoadNetwork:
             final_score = min(100, base_score + avg_influence * 25)
 
             data["greenscore"] = max(0, final_score)
-    """
+
+        self._build_sparse()
+        #self.print_matrices()
+
     def _build_sparse(self):
         rows, cols, travel_times, greenscores = [], [], [], []
         for u, v, d in self.graph.edges(data=True):
@@ -149,8 +152,8 @@ class RoadNetwork:
         path.append(int(src))
         path.reverse()
         #for i in range(len(path) - 1):
-            #print(
-            #    f"Greenscore zwischen Knoten {path[i]} und {path[i + 1]} ist: {self.edge_greenscore(path[i], path[i + 1])}")
+        #print(
+        #    f"Greenscore zwischen Knoten {path[i]} und {path[i + 1]} ist: {self.edge_greenscore(path[i], path[i + 1])}")
         return path
 
     def calculate_edge_cost_with_preferences(self, a, b, route_weight_dict):
@@ -179,7 +182,8 @@ class RoadNetwork:
                 adjusted_costs.append(adjusted_cost)
         return csr_matrix((adjusted_costs, (rows, cols)), shape=(self.n, self.n))
 
-    def best_path(self, src: int, dst: int, route_weights_dict, home=None, locations=None, tank_weights=None) -> List[int]:
+    def best_path(self, src: int, dst: int, route_weights_dict, home=None, locations=None, tank_weights=None) -> List[
+        int]:
         preference_matrix = self.build_preference_sparse_matrix(route_weights_dict)
         if locations is not None and len(locations) > 0:
             best_score = float('inf')
@@ -226,7 +230,6 @@ class RoadNetwork:
         else:
             return self.shortest_path_sparse(src, dst, preference_matrix)
 
-
     def set_Supermarkets(self, supermarkets):
         self.supermarkets = supermarkets
 
@@ -235,3 +238,20 @@ class RoadNetwork:
             return self.park_greenscores[park_node]
         else:
             return 0.0
+
+    def print_matrices(self, route_weights_dict=None):
+        import numpy as np
+        print("Greenscore-Matrix:")
+        greenscore_matrix = self.sparse_greenscore.toarray()
+        print(np.round(greenscore_matrix, 10))
+
+        print("\nTravelTime-Matrix:")
+        traveltime_matrix = self.sparse_travel_time.toarray()
+        print(np.round(traveltime_matrix, 10))
+
+        if route_weights_dict is not None:
+            print("\nPräferenz-Matrix (kombiniert):")
+            pref_matrix = self.build_preference_sparse_matrix(route_weights_dict).toarray()
+            print(np.round(pref_matrix, 10))
+        else:
+            print("\nKeine Präferenz-Matrix berechnet (route_weights_dict=None)")
