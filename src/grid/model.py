@@ -96,22 +96,46 @@ class CityModel(Model):
             self.grid.place_agent(citizen, home)
             self.schedule.add(citizen)
 
+        def goal_to_str(a):
+            goal = getattr(a, 'current_goal', None)
+            if goal is None:
+                return None
+            if goal in self.parks_good:
+                return 'park_good'
+            elif goal in self.parks_medium:
+                return 'park_medium'
+            elif goal in self.parks_bad:
+                return 'park_bad'
+            elif goal in self.parks:
+                return 'park'
+            elif goal in self.supermarkets:
+                return 'supermarket'
+            elif goal in self.homes:
+                return 'home'
+            elif goal in self.workplaces:
+                return 'workplace'
+            else:
+                return str(goal)
+
         self.datacollector = DataCollector(
             model_reporters={
                 "Step": lambda m: m.schedule.steps
             },
             agent_reporters={
                 "pos": "pos",
+                "route": lambda a: getattr(a, 'route', []),
+                "current_goal": goal_to_str,
+                "current_activity": lambda a: getattr(a, 'current_activity', None),
                 "mental_health": lambda a: a.tank_mental_health.level,
                 "physical_health": lambda a: a.tank_physical_health.level,
                 "leisure": lambda a: a.tank_leisure.level,
                 "social_inclusion": lambda a: a.tank_social_inclusion.level,
                 "self_determination": lambda a: a.tank_self_determination.level,
-                "food": lambda a: a.tank_food.level,
-                "current_goal": lambda a: getattr(a, 'current_goal', None),
-                "current_activity": lambda a: getattr(a, 'current_activity', None)
+                "food": lambda a: a.tank_food.level
             }
         )
+
+
 
     def step(self):
         self.datacollector.collect(self)

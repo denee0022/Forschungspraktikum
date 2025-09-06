@@ -42,6 +42,7 @@ class Citizen(Agent):
         #loc = ""
         current_step = self.model.schedule.steps if hasattr(self.model.schedule, 'steps') else 0
         scheduled_activity = self.daily_schedule.get_activity_for_step(current_step)
+        self.route = []
         if (scheduled_activity.value != self.current_activity.value or
                 self.current_activity.value == Activity.LEISURE.value):
             print("Sind drin")
@@ -80,7 +81,6 @@ class Citizen(Agent):
             self.model.grid.move_agent(self, self.current_goal)
             self.pos = self.current_goal
         self.execute_current_activity(self.location)
-        self.route = []
         print(f"Agent {self.unique_id} ist jetzt an Knoten {self.pos}")
 
     def choose_leisure_location(self):
