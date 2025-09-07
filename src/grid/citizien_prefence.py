@@ -4,7 +4,8 @@ from constants import PreferenceType
 
 class CitizienPreferences:
     def __init__(self, preference_tank_weights=None, preference_route_weights=None):
-        if preference_tank_weights is None:  # Hier war "preference_weights" falsch
+        # Intialize tank preferences to decide which need to fill up
+        if preference_tank_weights is None:
             self.tank_weights = {
                 PreferenceType.MENTAL_HEALTH: np.random.uniform(0.1, 0.9),
                 PreferenceType.PHYSICAL_HEALTH: np.random.uniform(0.1, 0.9),
@@ -16,6 +17,7 @@ class CitizienPreferences:
         else:
             self.tank_weights = preference_tank_weights
 
+        # Initialize route preferences to decide which route to take
         if preference_route_weights is None:  # Separate Behandlung für route_weights
             self.route_weights = {
                 PreferenceType.EFFICIENCY: np.random.uniform(0.1, 0.9),
@@ -24,6 +26,7 @@ class CitizienPreferences:
         else:
             self.route_weights = preference_route_weights
 
+        # normalize the weights
         total_tank_weight = sum(self.tank_weights.values())
         for pref_type in self.tank_weights:
             self.tank_weights[pref_type] /= total_tank_weight

@@ -3,7 +3,6 @@ from constants import Activity
 
 class DailySchedule:
     def __init__(self, steps_per_day=24):
-        #Nochmal nachschauen wie man es effektiv machen sonst einfach manuell hinzufügen
         self.steps_per_day = steps_per_day
         self.schedule = {}
 

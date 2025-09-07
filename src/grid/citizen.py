@@ -22,10 +22,11 @@ class Citizen(Agent):
         self.location = "home"
         self.time_to_next = 0
         self.current_activity = Activity.SLEEPING
+        #Create preferences
         self.preferences = CitizienPreferences(citizien_tank_preference, citizien_route_preference)
         self.bestPref_tank = self.preferences.get_highest_tank_preference_type()
         self.bestPref_route = self.preferences.get_highest_route_preference_type()
-
+        #Watertank for every need
         self.tank_mental_health = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
         self.tank_physical_health = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
         self.tank_leisure = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
@@ -47,11 +48,12 @@ class Citizen(Agent):
             start = self.pos
             route_weigths = self.preferences.route_weights
             self.current_activity = scheduled_activity
-            #print(f"Citizen {self.unique_id}: Neue Aktivität: {self.current_activity} (Step {current_step})")
+            #Pathfinding for Working
             if self.current_activity.value == Activity.WORKING.value:
                 self.current_goal = self.work
                 self.route = self.model.road.best_path(start, self.current_goal, route_weigths)
                 self.location = "work"
+            #Pathfinding for Leisure Period
             elif self.current_activity.value == Activity.LEISURE.value:
                 locations = self.choose_leisure_location()
                 tank_weights = self.preferences.tank_weights
@@ -59,29 +61,24 @@ class Citizen(Agent):
                                                                                          route_weigths,
                                                                                          self.home,
                                                                                          locations, tank_weights)
-                #print(f"Current_goal leisure= {self.current_goal}")
-                #print(f"goal leisure= {self.current_goal}")
-                #print(f"Kürzeste Route für Agent {self.unique_id} in Leisure: {self.route}")
-            else:  # SLEEPING
+            #Path finding for Sleeping (going home)
+            else:
                 self.current_goal = self.home
                 self.current_activity = Activity.SLEEPING
                 self.route = self.model.road.best_path(start, self.current_goal, route_weigths)
                 #print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
                 self.location = "home"
-            #print(f"Agent {self.unique_id} Position: {self.pos}, Ziel: {self.current_goal}")
+            #postive effect if going through a park
             for node in self.route:
                 if node in self.model.parks and (len(self.route) != 1):
                     self.action.path_UGS(self, self.model.road.get_greenscore_park(node))
-                    #print(f"Agent {self.unique_id} geht über Park")
                 else:
                     self.action.path_street(self)
-                    #print(f"Agent {self.unique_id} geht über Straße")
-            #print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
             self.model.grid.move_agent(self, self.current_goal)
             self.pos = self.current_goal
         self.execute_current_activity(self.location)
-        #print(f"Agent {self.unique_id} ist jetzt an Knoten {self.pos}")
 
+    #choose the possible activites according to the need(tanks under threshold)
     def choose_leisure_location(self):
         tank_map = {
             'mental_health': (self.tank_mental_health, PreferenceType.MENTAL_HEALTH),
@@ -101,22 +98,21 @@ class Citizen(Agent):
                 under_threshold.append((name, pref_type))
 
         if not under_threshold:
-            # Kein Tank unter Threshold: Standard-Location zurückgeben
-            #print("Alle Tanks über Threshold, gehe nach Hause.")
-            return self.best_location_for_tanks(['mental_health'])  # oder ['home'] je nach Mapping
-
+            # If no tank is under the threshold the citizen goes home
+            return self.best_location_for_tanks(['mental_health'])
+        #if len = 1 so just one location else more locations for path finding
         if len(under_threshold) == 1:
             best = max(
                 tank_map.items(),
                 key=lambda x: self.preferences.get_tank_weight(x[1][1])
             )
-            #print(f"Leisure_location: {self.best_location_for_tanks([best[0]])}")
             return self.best_location_for_tanks([best[0]])
         else:
             tanks = [name for name, _ in under_threshold]
             #print(f"Leisure_location: {self.best_location_for_tanks(tanks)}")
             return self.best_location_for_tanks(tanks)
 
+    #execute actions depending one the planed activity
     def execute_current_activity(self, location):
         #print(f"location: {location}")
         if self.current_activity == Activity.SLEEPING:

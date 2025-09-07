@@ -30,16 +30,12 @@ class RoadNetwork:
 
         # Edge defaults
         for u, v, data in self.graph.edges(data=True):
-            """
-            data.setdefault("length", 1.0)
-            data.setdefault("base_time", data["length"] / 1.0)
-            data.setdefault("travel_time", data["base_time"])
-            """
             time = random.uniform(0.5, 3.0)  # zufällige Länge zwischen 0.5 und 2.0
             data["travel_time"] = time
             data["greenscore"] = 0
         self._build_sparse()
 
+    # sets the park quality
     def set_parks(self, parks, park_good_quality, park_medium_quality, park_bad_quality):
         self.parks = parks
         self.park_good = park_good_quality
@@ -57,6 +53,7 @@ class RoadNetwork:
 
         self.calculate_road_greenscores()
 
+    #calculates the greenscore of the road, which are near the parks (Default: directly connected to park)
     def calculate_road_greenscores(self, max_distance=1):
         park_influences = {}
         all_park_types = [
@@ -97,6 +94,7 @@ class RoadNetwork:
         self._build_sparse()
         #self.print_matrices()
 
+    #build two sparse matrix, one for greenscore and one for travel duration
     def _build_sparse(self):
         rows, cols, travel_times, greenscores = [], [], [], []
         for u, v, d in self.graph.edges(data=True):
@@ -132,7 +130,7 @@ class RoadNetwork:
             return float(matrix[a, b])
         return 0.0
 
-    # hier wird nur nach der TravelTime geschaut
+    # search for the shortest/cost-effective route and returns it
     def shortest_path_sparse(self, src: int, dst: int, sparse_matrix: csgraph) -> List[int]:
         """Dijkstra auf Sparse-Matrix."""
         dist_matrix, predecessors = dijkstra(csgraph=sparse_matrix, directed=False,
@@ -155,6 +153,7 @@ class RoadNetwork:
         #    f"Greenscore zwischen Knoten {path[i]} und {path[i + 1]} ist: {self.edge_greenscore(path[i], path[i + 1])}")
         return path
 
+    #changes the costs of the edges depending on the preferences
     def calculate_edge_cost_with_preferences(self, a, b, route_weight_dict):
         base_cost = self.edge_travel_time(a, b)
         greenscore = self.edge_greenscore(a, b)
@@ -169,6 +168,7 @@ class RoadNetwork:
 
         return max(0.1, final_cost)
 
+    #builds the preference sparse matrix
     def build_preference_sparse_matrix(self, route_weights_dict):
         rows, cols, adjusted_costs = [], [], []
 
@@ -181,6 +181,10 @@ class RoadNetwork:
                 adjusted_costs.append(adjusted_cost)
         return csr_matrix((adjusted_costs, (rows, cols)), shape=(self.n, self.n))
 
+    """
+        Find the best path from src to dst (or to one of several possible locations),
+        taking into account agent preferences and current needs (tank_weights).
+        """
     def best_path(self, src: int, dst: int, route_weights_dict, home=None, locations=None, tank_weights=None) -> List[
         int]:
         preference_matrix = self.build_preference_sparse_matrix(route_weights_dict)

@@ -16,11 +16,3 @@ class PreferenceType(Enum):
     SOCIAL_INCLUSION = "social_inclusion"
     SELF_DETERMINATION = "self_determination"
     FOOD = "food"
-
-
-# Schauen, ob man dies benutzt für Sauberkeit
-class LocationType(Enum):
-    HOME = 0
-    WORKPLACE = 1
-    PARK = 2
-    SUPERMARKET = 3

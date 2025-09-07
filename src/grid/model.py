@@ -19,12 +19,13 @@ class CityModel(Model):
                  work_fraction=0.3,
                  seed: Optional[int] = 42):
         super().__init__()
-
+        #set the seed to not lose results
         if seed is not None:
             random.seed(seed)
             np.random.seed(seed)
-        graph = nx.complete_graph(width * height)
 
+        #create mesa graph, networkx graph and sparse matrix
+        graph = nx.complete_graph(width * height)
         self.road = RoadNetwork(graph)
         self.grid = NetworkGrid(self.road.graph)
         self.schedule = SimultaneousActivation(self)
@@ -32,28 +33,28 @@ class CityModel(Model):
 
         all_nodes = list(self.road.graph.nodes())
 
-        #if n_agents > len(all_nodes):
-        #    raise ValueError("Mehr Agenten als Knoten!")
+        #create homes depending on the home fraction
         print(all_nodes)
         n_houses = int(len(all_nodes) * house_fraction)
         home_nodes = list(np.random.choice(all_nodes, size=n_houses, replace=False))
         self.homes = set(home_nodes)
 
+        #create workplaces from the remaining node depending on work fraction
         n_workplaces = int(len(all_nodes) * work_fraction)
         available_for_workplaces = list(set(all_nodes) - set(home_nodes))
         workplace_nodes = list(np.random.choice(available_for_workplaces, size=n_workplaces, replace=False))
         self.workplaces = set(workplace_nodes)
 
+        #choose park nodes
         available_for_parks = list(set(all_nodes) - set(home_nodes) - self.workplaces)
         n_parks = max(1, int(len(all_nodes) * park_fraction))
         park_nodes = list(np.random.choice(available_for_parks, size=n_parks, replace=False))
         self.parks = set(park_nodes)
 
+        #set park quality
         n_parks_good = max(1, int(n_parks * park_good_fraction))
         n_parks_medium = max(1, int(n_parks * park_medium_fraction))
         n_parks_bad = max(1, int(n_parks * park_bad_fraction))
-        print(n_parks_good, n_parks_medium, n_parks_bad)
-
         self.parks_good = list(np.random.choice(park_nodes, size=n_parks_good, replace=False))
         remaining_after_good = list(set(park_nodes) - set(self.parks_good))
         self.parks_medium = list(np.random.choice(remaining_after_good, size=n_parks_medium, replace=False))
@@ -61,12 +62,14 @@ class CityModel(Model):
         self.parks_bad = list(np.random.choice(remaining_after_good_medium, size=n_parks_bad, replace=False))
         self.road.set_parks(self.parks, self.parks_good, self.parks_medium, self.parks_bad)
 
+        #create supermarkets depending on the remaining nodes and supermarket fraction
         available_for_markets = list(set(all_nodes) - self.homes - self.workplaces - self.parks)
         n_supermarkets = max(1, int(len(all_nodes) * market_fraction))
         supermarket_nodes = list(np.random.choice(available_for_markets, size=n_supermarkets, replace=False))
         self.supermarkets = set(supermarket_nodes)
         self.road.set_Supermarkets(self.supermarkets)
 
+        #create citizen and assign them to different homes and workplaces
         citizens = []
         assigned_homes = []
         for i, home in enumerate(home_nodes):
@@ -116,6 +119,7 @@ class CityModel(Model):
             else:
                 return str(goal)
 
+        #decide which data the mesa collector needs to save
         self.datacollector = DataCollector(
             model_reporters={
                 "Step": lambda m: m.schedule.steps,
