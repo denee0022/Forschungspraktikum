@@ -36,7 +36,7 @@ class RoadNetwork:
             data.setdefault("base_time", data["length"] / 1.0)
             data.setdefault("travel_time", data["base_time"])
             """
-            time = random.uniform(0.5, 2.0)  # zufällige Länge zwischen 0.5 und 2.0
+            time = random.uniform(0.5, 3.0)  # zufällige Länge zwischen 0.5 und 2.0
             data["travel_time"] = time
             data["greenscore"] = 0
         self._build_sparse()
@@ -96,7 +96,7 @@ class RoadNetwork:
             data["greenscore"] = max(0, final_score)
 
         self._build_sparse()
-        #self.print_matrices()
+        self.print_matrices()
 
     def _build_sparse(self):
         rows, cols, travel_times, greenscores = [], [], [], []

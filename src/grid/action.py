@@ -87,4 +87,4 @@ class Action:
         citizen.tank_leisure.update(1)
         citizen.tank_social_inclusion.update(1)
         citizen.tank_self_determination.update(1)
-        citizen.tank_food.update(50)
+        citizen.tank_food.update(70)

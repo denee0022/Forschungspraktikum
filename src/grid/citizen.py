@@ -27,12 +27,12 @@ class Citizen(Agent):
         self.current_activity = Activity.SLEEPING
         self.preferences = CitizienPreferences(citizien_tank_preference, citizien_route_preference)
 
-        self.tank_mental_health = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
-        self.tank_physical_health = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
-        self.tank_leisure = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
-        self.tank_social_inclusion = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
-        self.tank_self_determination = Tank(100, np.random.randint(30, 100),np.random.randint(20,30))
-        self.tank_food = Tank(100, np.random.randint(30, 100), np.random.randint(20,30))
+        self.tank_mental_health = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
+        self.tank_physical_health = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
+        self.tank_leisure = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
+        self.tank_social_inclusion = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
+        self.tank_self_determination = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
+        self.tank_food = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
 
         self.life_quality = 0
         self.action = Action()
@@ -57,7 +57,8 @@ class Citizen(Agent):
             elif self.current_activity.value == Activity.LEISURE.value:
                 locations = self.choose_leisure_location()
                 tank_weights = self.preferences.tank_weights
-                self.route, self.current_goal, self.location = self.model.road.best_path(start, self.current_goal, route_weigths,
+                self.route, self.current_goal, self.location = self.model.road.best_path(start, self.current_goal,
+                                                                                         route_weigths,
                                                                                          self.home,
                                                                                          locations, tank_weights)
                 print(f"Current_goal leisure= {self.current_goal}")
@@ -97,7 +98,8 @@ class Citizen(Agent):
         under_threshold = []
         for name, (tank, pref_type) in tank_map.items():
             if tank_levels[name] < (tank.threshold / tank.capacity):
-                print(f"Tank-Name: {name}: Tank-Level: {tank_levels[name]}, Tank-Threshold: {tank.threshold / tank.capacity}")
+                print(
+                    f"Tank-Name: {name}: Tank-Level: {tank_levels[name]}, Tank-Threshold: {tank.threshold / tank.capacity}")
                 under_threshold.append((name, pref_type))
 
         if not under_threshold:
@@ -116,6 +118,7 @@ class Citizen(Agent):
             tanks = [name for name, _ in under_threshold]
             print(f"Leisure_location: {self.best_location_for_tanks(tanks)}")
             return self.best_location_for_tanks(tanks)
+
     def execute_current_activity(self, location):
         print(f"location: {location}")
         if self.current_activity == Activity.SLEEPING:
