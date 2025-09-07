@@ -12,7 +12,7 @@ from citizien_prefence import CitizienPreferences
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work, citizien_tank_preference=None, citizien_route_preference=None):
         # hier nochmal schauen. Bei mesa version 2.3.2 scheint es 2 Parameter zu brauchen
-        super().__init__(model)
+        super().__init__(unique_id, model)
         self.id = unique_id
         self.home = home
         self.work = work
@@ -47,7 +47,7 @@ class Citizen(Agent):
             start = self.pos
             route_weigths = self.preferences.route_weights
             self.current_activity = scheduled_activity
-            print(f"Citizen {self.unique_id}: Neue Aktivität: {self.current_activity} (Step {current_step})")
+            #print(f"Citizen {self.unique_id}: Neue Aktivität: {self.current_activity} (Step {current_step})")
             if self.current_activity.value == Activity.WORKING.value:
                 self.current_goal = self.work
                 self.route = self.model.road.best_path(start, self.current_goal, route_weigths)
@@ -110,11 +110,11 @@ class Citizen(Agent):
                 tank_map.items(),
                 key=lambda x: self.preferences.get_tank_weight(x[1][1])
             )
-            print(f"Leisure_location: {self.best_location_for_tanks([best[0]])}")
+            #print(f"Leisure_location: {self.best_location_for_tanks([best[0]])}")
             return self.best_location_for_tanks([best[0]])
         else:
             tanks = [name for name, _ in under_threshold]
-            print(f"Leisure_location: {self.best_location_for_tanks(tanks)}")
+            #print(f"Leisure_location: {self.best_location_for_tanks(tanks)}")
             return self.best_location_for_tanks(tanks)
 
     def execute_current_activity(self, location):
@@ -130,11 +130,11 @@ class Citizen(Agent):
                 self.action.freetime_UGS(self, self.model.road.get_greenscore_park(park))
             elif location == "home":
                 #self.pos in getattr(self.model, 'home', set()):
-                print(f"Agent {self.unique_id} geht nach Hause")
+                #print(f"Agent {self.unique_id} geht nach Hause")
                 self.action.freetime_home(self)
             else:
                 self.action.eating(self)
-                print(f"Agent {self.unique_id} geht zum Supermarkt")
+                #print(f"Agent {self.unique_id} geht zum Supermarkt")
 
     def get_tank_levels_dict(self):
         return {
