@@ -149,7 +149,7 @@ class CityModel(Model):
         self.schedule.step()
         all_agents = self.grid.get_all_cell_contents()
 
-        print("=== Agent Status ===")
+        """print("=== Agent Status ===")
         for agent in all_agents:
             print(f"Agent {agent.unique_id}: Position {agent.pos}, Aktivität: {agent.current_activity.value}")
-            agent.show_tanks()
+            agent.show_tanks()"""

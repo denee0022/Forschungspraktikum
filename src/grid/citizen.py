@@ -45,7 +45,6 @@ class Citizen(Agent):
         self.route = []
         if (scheduled_activity.value != self.current_activity.value or
                 self.current_activity.value == Activity.LEISURE.value):
-            print("Sind drin")
             start = self.pos
             route_weigths = self.preferences.route_weights
             self.current_activity = scheduled_activity
@@ -61,28 +60,28 @@ class Citizen(Agent):
                                                                                          route_weigths,
                                                                                          self.home,
                                                                                          locations, tank_weights)
-                print(f"Current_goal leisure= {self.current_goal}")
-                print(f"goal leisure= {self.current_goal}")
-                print(f"Kürzeste Route für Agent {self.unique_id} in Leisure: {self.route}")
+                #print(f"Current_goal leisure= {self.current_goal}")
+                #print(f"goal leisure= {self.current_goal}")
+                #print(f"Kürzeste Route für Agent {self.unique_id} in Leisure: {self.route}")
             else:  # SLEEPING
                 self.current_goal = self.home
                 self.current_activity = Activity.SLEEPING
                 self.route = self.model.road.best_path(start, self.current_goal, route_weigths)
-                print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
+                #print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
                 self.location = "home"
-            print(f"Agent {self.unique_id} Position: {self.pos}, Ziel: {self.current_goal}")
+            #print(f"Agent {self.unique_id} Position: {self.pos}, Ziel: {self.current_goal}")
             for node in self.route:
                 if node in self.model.parks and (len(self.route) != 1):
                     self.action.path_UGS(self, self.model.road.get_greenscore_park(node))
-                    print(f"Agent {self.unique_id} geht über Park")
+                    #print(f"Agent {self.unique_id} geht über Park")
                 else:
                     self.action.path_street(self)
-                    print(f"Agent {self.unique_id} geht über Straße")
+                    #print(f"Agent {self.unique_id} geht über Straße")
             #print(f"Kürzeste Route für Agent {self.unique_id}: {self.route}")
             self.model.grid.move_agent(self, self.current_goal)
             self.pos = self.current_goal
         self.execute_current_activity(self.location)
-        print(f"Agent {self.unique_id} ist jetzt an Knoten {self.pos}")
+        #print(f"Agent {self.unique_id} ist jetzt an Knoten {self.pos}")
 
     def choose_leisure_location(self):
         tank_map = {
@@ -98,13 +97,13 @@ class Citizen(Agent):
         under_threshold = []
         for name, (tank, pref_type) in tank_map.items():
             if tank_levels[name] < (tank.threshold / tank.capacity):
-                print(
-                    f"Tank-Name: {name}: Tank-Level: {tank_levels[name]}, Tank-Threshold: {tank.threshold / tank.capacity}")
+                #print(
+                 #   f"Tank-Name: {name}: Tank-Level: {tank_levels[name]}, Tank-Threshold: {tank.threshold / tank.capacity}")
                 under_threshold.append((name, pref_type))
 
         if not under_threshold:
             # Kein Tank unter Threshold: Standard-Location zurückgeben
-            print("Alle Tanks über Threshold, gehe nach Hause.")
+            #print("Alle Tanks über Threshold, gehe nach Hause.")
             return self.best_location_for_tanks(['mental_health'])  # oder ['home'] je nach Mapping
 
         if len(under_threshold) == 1:
@@ -120,7 +119,7 @@ class Citizen(Agent):
             return self.best_location_for_tanks(tanks)
 
     def execute_current_activity(self, location):
-        print(f"location: {location}")
+        #print(f"location: {location}")
         if self.current_activity == Activity.SLEEPING:
             self.action.sleeping(self)
         elif self.current_activity == Activity.WORKING:
