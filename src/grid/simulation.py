@@ -52,8 +52,8 @@ if __name__ == "__main__":
     market_fraction = 0.1
     house_fraction = 0.3
     work_fraction = 0.3
-    hours = 2
-    seedCount = 3
+    hours = 168
+    seedCount = 10
 
     #testModel = CityModel(width=5, height=5, n_agents=7,
     # park_fraction=0.289, seed=seed)

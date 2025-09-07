@@ -12,7 +12,7 @@ from citizien_prefence import CitizienPreferences
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work, citizien_tank_preference=None, citizien_route_preference=None):
         # hier nochmal schauen. Bei mesa version 2.3.2 scheint es 2 Parameter zu brauchen
-        super().__init__(model)
+        super().__init__(unique_id, model)
         self.id = unique_id
         self.home = home
         self.work = work
