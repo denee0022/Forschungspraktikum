@@ -132,7 +132,10 @@ class CityModel(Model):
                 "social_inclusion": lambda a: a.tank_social_inclusion.level,
                 "self_determination": lambda a: a.tank_self_determination.level,
                 "food": lambda a: a.tank_food.level,
+                "Höchste Preference bei Tanks": lambda  a: a.bestPref_tank,
+                "Höchste Preference bei Route": lambda a: a.bestPref_route,
                 "quality of life": lambda a: a.life_quality
+
             }
         )
 
@@ -148,6 +151,7 @@ class CityModel(Model):
         self.datacollector.collect(self)
         self.schedule.step()
         all_agents = self.grid.get_all_cell_contents()
+        self.get_average_Qlife()
 
         """print("=== Agent Status ===")
         for agent in all_agents:

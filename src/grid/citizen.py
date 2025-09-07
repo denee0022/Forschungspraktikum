@@ -23,6 +23,8 @@ class Citizen(Agent):
         self.time_to_next = 0
         self.current_activity = Activity.SLEEPING
         self.preferences = CitizienPreferences(citizien_tank_preference, citizien_route_preference)
+        self.bestPref_tank = self.preferences.get_highest_tank_preference_type()
+        self.bestPref_route = self.preferences.get_highest_route_preference_type()
 
         self.tank_mental_health = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
         self.tank_physical_health = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
@@ -175,4 +177,6 @@ class Citizen(Agent):
         self_leisure = self.tank_leisure.level
         social_inclusion = self.tank_social_inclusion.level
         self.life_quality = mental_health + physical_health + self_determination + self_leisure + social_inclusion
+
+
 

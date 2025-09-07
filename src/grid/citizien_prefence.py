@@ -58,3 +58,9 @@ class CitizienPreferences:
     def show_preferences(self):
         print(f"Route-Präferenz-Vektoren: {self.get_preference_route_vector()}")
         print(f"Tank-Präferenz-Vektoren: {self.get_preference_tank_vector()}")
+
+    def get_highest_tank_preference_type(self):
+        return max(self.tank_weights, key=self.tank_weights.get)
+
+    def get_highest_route_preference_type(self):
+        return max(self.route_weights, key=self.route_weights.get)
