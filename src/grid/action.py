@@ -6,13 +6,13 @@ class Action:
         citizen.tank_physical_health.update(3)
         citizen.tank_leisure.update(-1)
         citizen.tank_social_inclusion.update(-2)
-        citizen.tank_self_determination.update(-2)
+        citizen.tank_self_determination.update(-1)
         citizen.tank_food.update(-2)
 
     def working(self, citizen):
-        citizen.tank_mental_health.update(-3)
-        citizen.tank_physical_health.update(-3)
-        citizen.tank_leisure.update(-3)
+        citizen.tank_mental_health.update(-2)
+        citizen.tank_physical_health.update(-2)
+        citizen.tank_leisure.update(-2)
         citizen.tank_social_inclusion.update(1)
         citizen.tank_self_determination.update(-2)
         citizen.tank_food.update(-2)
@@ -28,7 +28,7 @@ class Action:
         elif 33 <= greenscore < 66:
             citizen.tank_mental_health.update(2)
             citizen.tank_physical_health.update(4)
-            citizen.tank_leisure.update(2)
+            citizen.tank_leisure.update(3)
             citizen.tank_social_inclusion.update(3)
             citizen.tank_self_determination.update(5)
             citizen.tank_food.update(-6)
@@ -43,7 +43,7 @@ class Action:
     def freetime_home(self, citizen):
         citizen.tank_mental_health.update(4)
         citizen.tank_physical_health.update(2)
-        citizen.tank_leisure.update(5)
+        citizen.tank_leisure.update(6)
         citizen.tank_social_inclusion.update(2)
         citizen.tank_self_determination.update(6)
         citizen.tank_food.update(-2)

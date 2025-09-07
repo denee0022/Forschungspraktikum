@@ -15,7 +15,7 @@ np.random.seed(42)  # random Seed, um Tanks zufällig zu füllen
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work, citizien_tank_preference=None, citizien_route_preference=None):
         # hier nochmal schauen. Bei mesa version 2.3.2 scheint es 2 Parameter zu brauchen
-        super().__init__(model)
+        super().__init__(unique_id, model)
         self.id = unique_id
         self.home = home
         self.work = work
@@ -178,5 +178,5 @@ class Citizen(Agent):
         self_determination = self.tank_self_determination.level
         self_leisure = self.tank_leisure.level
         social_inclusion = self.tank_social_inclusion.level
-        self.life_quality = (mental_health + physical_health + self_determination + self_leisure + social_inclusion) / 5
-        return self.life_quality
+        self.life_quality = mental_health + physical_health + self_determination + self_leisure + social_inclusion
+

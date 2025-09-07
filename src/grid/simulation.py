@@ -46,5 +46,8 @@ if __name__ == "__main__":
     agent_df.to_csv("agent_log.csv")
     for agent in model.schedule.agents:
         print(f"Agent {agent.unique_id} startet bei Knoten {agent.pos}")
-        print(agent.quality_of_life())
+        agent.quality_of_life()
+        print(f"Agent quality of life: {agent.life_quality}")
+    model.get_average_Qlife()
+    print(f"Average model quality of life: {model.average_Qlife}")
 

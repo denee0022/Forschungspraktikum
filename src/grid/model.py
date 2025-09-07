@@ -28,6 +28,7 @@ class CityModel(Model):
         self.road = RoadNetwork(graph)
         self.grid = NetworkGrid(self.road.graph)
         self.schedule = SimultaneousActivation(self)
+        self.average_Qlife = 0.0
 
         all_nodes = list(self.road.graph.nodes())
 
@@ -117,7 +118,8 @@ class CityModel(Model):
 
         self.datacollector = DataCollector(
             model_reporters={
-                "Step": lambda m: m.schedule.steps
+                "Step": lambda m: m.schedule.steps,
+                "average life quality": lambda m: m.average_Qlife
             },
             agent_reporters={
                 "pos": "pos",
@@ -129,10 +131,17 @@ class CityModel(Model):
                 "leisure": lambda a: a.tank_leisure.level,
                 "social_inclusion": lambda a: a.tank_social_inclusion.level,
                 "self_determination": lambda a: a.tank_self_determination.level,
-                "food": lambda a: a.tank_food.level
+                "food": lambda a: a.tank_food.level,
+                "quality of life": lambda a: a.life_quality
             }
         )
 
+    def get_average_Qlife(self):
+        quality_of_life = 0
+        all_agents = self.grid.get_all_cell_contents()
+        for agent in all_agents:
+            quality_of_life += agent.life_quality
+        self.average_Qlife = quality_of_life / len(all_agents)
 
 
     def step(self):

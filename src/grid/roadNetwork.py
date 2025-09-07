@@ -96,7 +96,7 @@ class RoadNetwork:
             data["greenscore"] = max(0, final_score)
 
         self._build_sparse()
-        self.print_matrices()
+        #self.print_matrices()
 
     def _build_sparse(self):
         rows, cols, travel_times, greenscores = [], [], [], []
