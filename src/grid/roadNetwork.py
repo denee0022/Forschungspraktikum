@@ -8,7 +8,6 @@ from scipy.sparse.csgraph import dijkstra
 from constants import PreferenceType
 import random
 
-np.random.seed(42)
 
 
 class RoadNetwork:

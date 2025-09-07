@@ -12,7 +12,7 @@ from citizien_prefence import CitizienPreferences
 class Citizen(Agent):
     def __init__(self, unique_id, model, home, work, citizien_tank_preference=None, citizien_route_preference=None):
         # hier nochmal schauen. Bei mesa version 2.3.2 scheint es 2 Parameter zu brauchen
-        super().__init__(unique_id, model)
+        super().__init__(model)
         self.id = unique_id
         self.home = home
         self.work = work
@@ -26,12 +26,12 @@ class Citizen(Agent):
         self.bestPref_tank = self.preferences.get_highest_tank_preference_type()
         self.bestPref_route = self.preferences.get_highest_route_preference_type()
 
-        self.tank_mental_health = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
-        self.tank_physical_health = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
-        self.tank_leisure = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
-        self.tank_social_inclusion = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
-        self.tank_self_determination = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
-        self.tank_food = Tank(100, np.random.randint(30, 100), np.random.randint(20, 30))
+        self.tank_mental_health = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
+        self.tank_physical_health = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
+        self.tank_leisure = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
+        self.tank_social_inclusion = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
+        self.tank_self_determination = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
+        self.tank_food = Tank(100, np.random.randint(70, 100), np.random.randint(20, 30))
 
         self.life_quality = 0
         self.action = Action()

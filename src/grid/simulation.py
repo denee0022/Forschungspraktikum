@@ -52,8 +52,8 @@ if __name__ == "__main__":
     market_fraction = 0.1
     house_fraction = 0.3
     work_fraction = 0.3
-    hours = 168
-    seedCount = 30
+    hours = 2
+    seedCount = 3
 
     #testModel = CityModel(width=5, height=5, n_agents=7,
     # park_fraction=0.289, seed=seed)
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         model_N1_badQ = CityModel(5, 5, 132, 0.289, 0.46,0.05, 0.49, market_fraction=market_fraction, house_fraction=house_fraction, work_fraction=work_fraction, seed=seed)
         model_N2_goodQ = CityModel(6, 5, 144, 0.247, 0.75, 0.2, 0.05, market_fraction=market_fraction,
                                    house_fraction=house_fraction, work_fraction=work_fraction, seed=seed)
-        #initialization(model_N2_goodQ)
-        #simulation(model_N2_goodQ, f"N2_good", "good")
+        initialization(model_N2_goodQ)
         initialization(model_N1_badQ)
-        simulation(model_N1_badQ, "N1_bad", "bad")
+        simulation(model_N2_goodQ, f"N2_good_{seed}", "good",hours)
+        simulation(model_N1_badQ, f"N1_bad_{seed}", "bad",hours)
